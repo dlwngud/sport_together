@@ -1,4 +1,4 @@
-package com.wngud.sprot_together
+package com.wngud.sport_together
 
 import org.junit.Test
 

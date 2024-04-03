@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "com.wngud.sprot_together"
+    namespace = "com.wngud.sport_together"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.wngud.sprot_together"
+        applicationId = "com.wngud.sport_together"
         minSdk = 24
         targetSdk = 34
         versionCode = 1
@@ -32,6 +32,9 @@ android {
     }
     kotlinOptions {
         jvmTarget = "1.8"
+    }
+    buildFeatures {
+        viewBinding = true
     }
 }
 

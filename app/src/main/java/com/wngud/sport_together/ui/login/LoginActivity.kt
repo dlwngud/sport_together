@@ -1,10 +1,10 @@
-package com.wngud.sprot_together.ui.login
+package com.wngud.sport_together.ui.login
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.wngud.sprot_together.MainActivity
-import com.wngud.sprot_together.databinding.ActivityLoginBinding
+import com.wngud.sport_together.MainActivity
+import com.wngud.sport_together.databinding.ActivityLoginBinding
 
 class LoginActivity : AppCompatActivity() {
 

@@ -1,10 +1,10 @@
-package com.wngud.sprot_together.ui.onboard
+package com.wngud.sport_together.ui.onboard
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.wngud.sprot_together.databinding.ActivityOnboardingBinding
-import com.wngud.sprot_together.ui.login.LoginActivity
+import com.wngud.sport_together.databinding.ActivityOnboardingBinding
+import com.wngud.sport_together.ui.login.LoginActivity
 
 class OnboardingActivity : AppCompatActivity() {
 
