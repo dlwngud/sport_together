@@ -50,4 +50,8 @@ dependencies {
 
     // 네이버 지도 SDK
     implementation("com.naver.maps:map-sdk:3.18.0")
+
+    // navigation
+    implementation("androidx.navigation:navigation-fragment-ktx:$2.7.7")
+    implementation("androidx.navigation:navigation-ui-ktx:2.7.7")
 }
