@@ -2,6 +2,7 @@ package com.wngud.sport_together
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.WindowManager
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
@@ -18,6 +19,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         setBottomNavigation()
+        setStatusBar()
     }
 
     private fun setBottomNavigation() {
@@ -25,5 +27,12 @@ class MainActivity : AppCompatActivity() {
             supportFragmentManager.findFragmentById(R.id.container_main) as NavHostFragment
         val navController = navHostFragment.findNavController()
         binding.bottomNavigationMain.setupWithNavController(navController)
+    }
+
+    private fun setStatusBar() {
+        window.setFlags(
+            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+        )
     }
 }
