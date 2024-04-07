@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.findNavController
 import com.wngud.sport_together.R
 import com.wngud.sport_together.databinding.FragmentReviewBinding
 
@@ -17,6 +18,13 @@ class ReviewFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentReviewBinding.inflate(layoutInflater, container, false)
+
+        binding.run {
+            fbtnReview.setOnClickListener {
+                it.findNavController().navigate(R.id.nav_add_review)
+            }
+        }
+
         return binding.root
     }
 }

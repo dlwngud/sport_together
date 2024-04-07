@@ -4,8 +4,12 @@
         <!-- Customize your dark theme here. -->
         <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
         <item name="android:windowBackground">@color/white</item>
+
         <!-- Status bar color. -->
         <item name="android:windowLightStatusBar">true</item>
         <item name="android:windowTranslucentStatus">true</item>
+
+        <!-- splash -->
+        <item name="android:windowIsTranslucent">true</item>
     </style>
 </resources>

@@ -25,4 +25,24 @@
         android:name="com.wngud.sport_together.ui.review.ReviewFragment"
         android:label="fragment_review"
         tools:layout="@layout/fragment_review" />
+    <fragment
+        android:id="@+id/nav_search"
+        android:name="com.wngud.sport_together.ui.map.SearchFragment"
+        android:label="fragment_search"
+        tools:layout="@layout/fragment_search" />
+    <fragment
+        android:id="@+id/nav_follow_manager"
+        android:name="com.wngud.sport_together.ui.mypage.FollowManagerFragment"
+        android:label="fragment_follow_manager"
+        tools:layout="@layout/fragment_follow_manager" />
+    <fragment
+        android:id="@+id/nav_profile_edit"
+        android:name="com.wngud.sport_together.ui.mypage.ProfileEditFragment"
+        android:label="fragment_profile_edit"
+        tools:layout="@layout/fragment_profile_edit" />
+    <fragment
+        android:id="@+id/nav_add_review"
+        android:name="com.wngud.sport_together.ui.review.AddReviewFragment"
+        android:label="fragment_add_review"
+        tools:layout="@layout/fragment_add_review" />
 </navigation>
