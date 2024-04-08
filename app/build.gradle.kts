@@ -1,11 +1,21 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    kotlin("kapt")
+    id("com.google.dagger.hilt.android")
 }
 
 android {
     namespace = "com.wngud.sport_together"
     compileSdk = 34
+
+    val properties = Properties()
+    properties.load(FileInputStream(rootProject.file("local.properties")))
+    val kakaoApiKey = properties["kakao_api_key"]
+    val naverClientId = properties["naver_client_id"]
 
     defaultConfig {
         applicationId = "com.wngud.sport_together"
@@ -15,6 +25,9 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField("String", "KAKAO_API_KEY", "${properties["kakao_api_key"]}")
+        manifestPlaceholders["KAKAO_API_KEY"] = kakaoApiKey as Any
+        manifestPlaceholders["NAVER_CLINET_ID"] = naverClientId as Any
     }
 
     buildTypes {
@@ -35,6 +48,7 @@ android {
     }
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
 }
 
@@ -60,4 +74,11 @@ dependencies {
 
     // circleImageView
     implementation("de.hdodenhof:circleimageview:3.1.0")
+
+    // kakao
+    implementation("com.kakao.sdk:v2-all:2.20.1")
+
+    // hilt
+    implementation("com.google.dagger:hilt-android:2.44")
+    kapt("com.google.dagger:hilt-android-compiler:2.44")
 }
