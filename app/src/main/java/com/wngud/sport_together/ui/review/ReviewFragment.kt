@@ -8,7 +8,9 @@ import android.view.ViewGroup
 import androidx.navigation.findNavController
 import com.wngud.sport_together.R
 import com.wngud.sport_together.databinding.FragmentReviewBinding
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class ReviewFragment : Fragment() {
 
     private lateinit var binding: FragmentReviewBinding

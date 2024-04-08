@@ -6,7 +6,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.wngud.sport_together.databinding.FragmentFollowManagerBinding
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class FollowManagerFragment : Fragment() {
 
     private lateinit var binding: FragmentFollowManagerBinding
