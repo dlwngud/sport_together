@@ -23,9 +23,7 @@ class LoginActivity : AppCompatActivity() {
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.btnLogin.setOnClickListener {
-            loginViewModel.loginKakao(this@LoginActivity)
-        }
+        kakaoLogin()
         observeUiEvent()
     }
 
@@ -34,10 +32,8 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun handleEvent(event: LoginEvent) = when (event) {
-        is LoginEvent.MoveToMain -> moveToMain()//
-        is LoginEvent.KakaoLoginFail -> {
-            showSnackBar("카카오 로그인에 문제가 발생하였습니다.")
-        }
+        is LoginEvent.MoveToMain -> moveToMain()
+        is LoginEvent.KakaoLoginFail -> showSnackBar("카카오 로그인에 문제가 발생하였습니다.")
     }
 
     private fun moveToMain() {
@@ -47,5 +43,11 @@ class LoginActivity : AppCompatActivity() {
 
     private fun showSnackBar(text: String) {
         Snackbar.make(binding.root, text, Snackbar.LENGTH_SHORT).show()
+    }
+
+    private fun kakaoLogin() {
+        binding.btnLogin.setOnClickListener {
+            loginViewModel.loginKakao(this@LoginActivity)
+        }
     }
 }

@@ -36,12 +36,12 @@ class MainActivity : AppCompatActivity() {
     private fun setBottomNavigationVisibility(navController: NavController) {
         navController.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
-                R.id.nav_search -> {
-                    binding.bottomNavigationMain.visibility = View.GONE
+                R.id.nav_map, R.id.nav_review, R.id.nav_chatting, R.id.nav_mypage -> {
+                    binding.bottomNavigationMain.visibility = View.VISIBLE
                 }
 
                 else -> {
-                    binding.bottomNavigationMain.visibility = View.VISIBLE
+                    binding.bottomNavigationMain.visibility = View.GONE
                 }
             }
         }

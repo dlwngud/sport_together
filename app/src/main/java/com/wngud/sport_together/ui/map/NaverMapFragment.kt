@@ -3,6 +3,7 @@ package com.wngud.sport_together.ui.map
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -10,6 +11,8 @@ import android.view.ViewGroup
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.navigation.findNavController
+import com.kakao.sdk.user.Constants.TAG
+import com.kakao.sdk.user.UserApiClient
 import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.MapFragment
 import com.naver.maps.map.NaverMap
@@ -52,9 +55,25 @@ class NaverMapFragment : Fragment(), OnMapReadyCallback {
             )
         } else {
             initMapView()
+            a()
         }
 
         return binding.root
+    }
+
+    fun a() {
+        UserApiClient.instance.me { user, error ->
+            if (error != null) {
+                Log.e(TAG, "사용자 정보 요청 실패", error)
+            }
+            else if (user != null) {
+                Log.i(TAG, "사용자 정보 요청 성공" +
+                        "\n회원번호: ${user.id}" +
+                        "\n이메일: ${user.kakaoAccount?.email}" +
+                        "\n닉네임: ${user.kakaoAccount?.profile?.nickname}" +
+                        "\n프로필사진: ${user.kakaoAccount?.profile?.thumbnailImageUrl}")
+            }
+        }
     }
 
     private fun initMapView() {
