@@ -6,6 +6,7 @@ plugins {
     id("org.jetbrains.kotlin.android")
     kotlin("kapt")
     id("com.google.dagger.hilt.android")
+    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
 }
 
 android {
@@ -14,8 +15,6 @@ android {
 
     val properties = Properties()
     properties.load(FileInputStream(rootProject.file("local.properties")))
-    val kakaoApiKey = properties["kakao_api_key"]
-    val naverClientId = properties["naver_client_id"]
 
     defaultConfig {
         applicationId = "com.wngud.sport_together"
@@ -26,8 +25,7 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField("String", "KAKAO_API_KEY", "${properties["kakao_api_key"]}")
-        manifestPlaceholders["KAKAO_API_KEY"] = kakaoApiKey as Any
-        manifestPlaceholders["NAVER_CLINET_ID"] = naverClientId as Any
+        buildConfigField("String", "NAVER_CLINET_ID", "${properties["naver_client_id"]}")
     }
 
     buildTypes {

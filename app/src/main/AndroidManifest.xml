@@ -48,13 +48,13 @@
 
                 <!-- Redirect URI: "kakao${NATIVE_APP_KEY}://oauth" -->
                 <data android:host="oauth"
-                    android:scheme="kakao${KAKAO_API_KEY}" />
+                    android:scheme="kakao${kakao_api_key}" />
             </intent-filter>
         </activity>
 
         <meta-data
             android:name="com.naver.maps.map.CLIENT_ID"
-            android:value="${NAVER_CLINET_ID}" />
+            android:value="${naver_client_id}" />
     </application>
 
 </manifest>
