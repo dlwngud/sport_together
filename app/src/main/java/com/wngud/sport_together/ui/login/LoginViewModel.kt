@@ -4,11 +4,15 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.Firebase
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.auth
 import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.common.model.ClientError
 import com.kakao.sdk.common.model.ClientErrorCause
 import com.kakao.sdk.user.Constants.TAG
 import com.kakao.sdk.user.UserApiClient
+import com.wngud.sport_together.App
 import com.wngud.sport_together.domain.model.User
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -33,6 +37,8 @@ sealed class LoginEvent {
 @HiltViewModel
 class LoginViewModel @Inject constructor() : ViewModel() {
 
+    private var auth: FirebaseAuth = Firebase.auth
+
     private val _uiState = MutableStateFlow(LoginUiState.loading)
     val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
 
@@ -43,6 +49,66 @@ class LoginViewModel @Inject constructor() : ViewModel() {
         _eventFlow.emit(event)
     }
 
+    private fun signUpFirebase() {
+        UserApiClient.instance.me { user, error ->
+            if (error != null) {
+                Log.e(TAG, "사용자 정보 요청 실패", error)
+            } else if (user != null) {
+                auth.createUserWithEmailAndPassword(user.kakaoAccount?.email!!, user.id.toString())
+                    .addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            Log.d(TAG, "createUserWithEmail:success")
+                            val currentUser = auth.currentUser
+                            val userInfo = User(
+                                currentUser?.uid!!,
+                                currentUser.email!!,
+                                user.kakaoAccount?.profile?.nickname!!,
+                                null,
+                                null,
+                                emptyList(),
+                                emptyList()
+                            )
+
+                            App.db.collection("users")
+                                .add(userInfo)
+                                .addOnSuccessListener { documentReference ->
+                                    Log.d(
+                                        TAG,
+                                        "DocumentSnapshot added with ID: ${documentReference.id}"
+                                    )
+                                }
+                                .addOnFailureListener { e ->
+                                    Log.w(TAG, "Error adding document", e)
+                                }
+                        } else {
+                            Log.w(TAG, "createUserWithEmail:failure", task.exception)
+                        }
+                    }
+            }
+        }
+    }
+
+    fun signInFirebase() {
+        UserApiClient.instance.me { user, error ->
+            if (error != null) {
+                Log.e(TAG, "사용자 정보 요청 실패", error)
+            } else if (user != null) {
+                auth.signInWithEmailAndPassword(user.kakaoAccount?.email!!, user.id.toString())
+                    .addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            // Sign in success, update UI with the signed-in user's information
+                            Log.d(TAG, "signInWithEmail:success")
+                            val user = auth.currentUser
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Log.w(TAG, "signInWithEmail:failure", task.exception)
+                            signUpFirebase()
+                        }
+                    }
+            }
+        }
+    }
+
     fun loginKakao(context: Context) {
         val callback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
             if (error != null) {
@@ -51,6 +117,7 @@ class LoginViewModel @Inject constructor() : ViewModel() {
             } else if (token != null) {
                 Log.i(TAG, "카카오계정으로 로그인 성공 ${token.accessToken}")
                 startEvent(LoginEvent.MoveToMain)
+                signInFirebase()
             }
         }
 
@@ -71,6 +138,7 @@ class LoginViewModel @Inject constructor() : ViewModel() {
                 } else if (token != null) {
                     Log.i(TAG, "카카오톡으로 로그인 성공 ${token.accessToken}")
                     startEvent(LoginEvent.MoveToMain)
+                    signInFirebase()
                 }
             }
         } else {

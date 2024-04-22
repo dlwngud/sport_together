@@ -7,6 +7,7 @@ import com.kakao.sdk.auth.AuthApiClient
 import com.kakao.sdk.common.model.KakaoSdkError
 import com.kakao.sdk.user.Constants
 import com.kakao.sdk.user.UserApiClient
+import com.wngud.sport_together.ui.login.LoginViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -19,7 +20,7 @@ sealed class SplashEvent {
 }
 
 @HiltViewModel
-class SplashViewModel @Inject constructor() : ViewModel() {
+class SplashViewModel @Inject constructor(private val loginViewModel: LoginViewModel) : ViewModel() {
     private val _eventFlow = MutableSharedFlow<SplashEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
 
@@ -44,6 +45,7 @@ class SplashViewModel @Inject constructor() : ViewModel() {
                     }
                 } else {
                     //토큰 유효성 체크 성공(필요 시 토큰 갱신됨)
+                    loginViewModel.signInFirebase()
                     startEvent(SplashEvent.MoveToMain)
                     Log.i(Constants.TAG, "만료시간: ${token?.expiresIn}")
                 }
