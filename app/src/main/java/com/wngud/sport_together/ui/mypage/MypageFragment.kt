@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
@@ -26,7 +27,8 @@ class MypageFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentMypageBinding.inflate(layoutInflater, container, false)
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_mypage, container, false)
+
 
         binding.run {
             tvFollowerMypage.setOnClickListener {
@@ -43,6 +45,7 @@ class MypageFragment : Fragment() {
             btnMypage.setOnClickListener {
                 mypageViewModel.logout()
             }
+            viewmodel = mypageViewModel
         }
 
         observeUiEvent()
@@ -58,7 +61,7 @@ class MypageFragment : Fragment() {
         mypageViewModel.eventFlow.collect { event -> handleEvent(event) }
     }
 
-    private fun handleEvent(event: MypageEvent) = when(event) {
+    private fun handleEvent(event: MypageEvent) = when (event) {
         is MypageEvent.MoveToLogin -> moveToLogin()
     }
 }

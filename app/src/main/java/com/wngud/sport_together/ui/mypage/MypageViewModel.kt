@@ -5,9 +5,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kakao.sdk.user.Constants
 import com.kakao.sdk.user.UserApiClient
+import com.wngud.sport_together.App
+import com.wngud.sport_together.domain.model.User
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -17,8 +21,14 @@ sealed class MypageEvent {
 
 @HiltViewModel
 class MypageViewModel @Inject constructor() : ViewModel() {
+    val user = MutableStateFlow<User>(User.Default)
+
     private val _eventFlow = MutableSharedFlow<MypageEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
+
+    init {
+        getCurrentUser()
+    }
 
     private fun startEvent(event: MypageEvent) = viewModelScope.launch {
         _eventFlow.emit(event)
@@ -33,5 +43,10 @@ class MypageViewModel @Inject constructor() : ViewModel() {
                 startEvent(MypageEvent.MoveToLogin)
             }
         }
+    }
+
+    private fun getCurrentUser() {
+        user.update { App.currentUser }
+        Log.i("user", "${user.value.uid}")
     }
 }

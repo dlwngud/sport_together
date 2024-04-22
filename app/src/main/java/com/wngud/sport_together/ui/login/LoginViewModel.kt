@@ -14,6 +14,7 @@ import com.kakao.sdk.user.Constants.TAG
 import com.kakao.sdk.user.UserApiClient
 import com.wngud.sport_together.App
 import com.wngud.sport_together.domain.model.User
+import com.wngud.sport_together.domain.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -35,7 +36,7 @@ sealed class LoginEvent {
 }
 
 @HiltViewModel
-class LoginViewModel @Inject constructor() : ViewModel() {
+class LoginViewModel @Inject constructor(private val userRepository: UserRepository) : ViewModel() {
 
     private var auth: FirebaseAuth = Firebase.auth
 
@@ -63,22 +64,26 @@ class LoginViewModel @Inject constructor() : ViewModel() {
                                 currentUser?.uid!!,
                                 currentUser.email!!,
                                 user.kakaoAccount?.profile?.nickname!!,
-                                null,
+                                "나를 소개해보세요",
                                 null,
                                 emptyList(),
                                 emptyList()
                             )
 
+                            App.currentUser = userInfo
                             App.db.collection("users")
-                                .add(userInfo)
-                                .addOnSuccessListener { documentReference ->
-                                    Log.d(
-                                        TAG,
-                                        "DocumentSnapshot added with ID: ${documentReference.id}"
-                                    )
+                                .document(userInfo.uid)
+                                .set(userInfo)
+                                .addOnSuccessListener {
+                                    Log.d(TAG, "DocumentSnapshot successfully written!")
+                                    startEvent(LoginEvent.MoveToMain)
                                 }
                                 .addOnFailureListener { e ->
-                                    Log.w(TAG, "Error adding document", e)
+                                    Log.w(
+                                        TAG,
+                                        "Error writing document",
+                                        e
+                                    )
                                 }
                         } else {
                             Log.w(TAG, "createUserWithEmail:failure", task.exception)
@@ -98,7 +103,23 @@ class LoginViewModel @Inject constructor() : ViewModel() {
                         if (task.isSuccessful) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithEmail:success")
-                            val user = auth.currentUser
+
+                            viewModelScope.launch {
+                                val u = userRepository.getUserInfo(auth.uid!!)
+                                val userInfo = User(
+                                    u.uid,
+                                    u.email,
+                                    u.nickname,
+                                    u.introduce,
+                                    u.profileImage,
+                                    u.follower,
+                                    u.following
+                                )
+                                App.currentUser = userInfo
+                                Log.i(TAG, App.currentUser.toString())
+                            }
+
+                            startEvent(LoginEvent.MoveToMain)
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithEmail:failure", task.exception)
@@ -116,7 +137,6 @@ class LoginViewModel @Inject constructor() : ViewModel() {
                 startEvent(LoginEvent.KakaoLoginFail)
             } else if (token != null) {
                 Log.i(TAG, "카카오계정으로 로그인 성공 ${token.accessToken}")
-                startEvent(LoginEvent.MoveToMain)
                 signInFirebase()
             }
         }

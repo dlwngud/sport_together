@@ -1,18 +1,18 @@
 package com.wngud.sport_together.di
 
+import com.wngud.sport_together.data.repository.UserRepositoryImpl
 import com.wngud.sport_together.domain.repository.UserRepository
-import com.wngud.sport_together.ui.login.LoginViewModel
+import dagger.Binds
 import dagger.Module
-import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-class AppModule {
+abstract class RepositoryModule {
 
-    @Provides
+    @Binds
     @Singleton
-    fun provideLoginViewModel(userRepository: UserRepository) = LoginViewModel(userRepository)
+    abstract fun bindUserRepository(userRepositoryImpl: UserRepositoryImpl): UserRepository
 }
