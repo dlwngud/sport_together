@@ -11,6 +11,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import com.wngud.sport_together.R
 import com.wngud.sport_together.databinding.FragmentMypageBinding
 import com.wngud.sport_together.ui.login.LoginActivity
@@ -45,6 +46,9 @@ class MypageFragment : Fragment() {
             btnMypage.setOnClickListener {
                 mypageViewModel.logout()
             }
+            toolbarMypage.setNavigationOnClickListener {
+                backPress()
+            }
             viewmodel = mypageViewModel
         }
 
@@ -63,5 +67,9 @@ class MypageFragment : Fragment() {
 
     private fun handleEvent(event: MypageEvent) = when (event) {
         is MypageEvent.MoveToLogin -> moveToLogin()
+    }
+
+    private fun backPress() {
+        findNavController().popBackStack()
     }
 }

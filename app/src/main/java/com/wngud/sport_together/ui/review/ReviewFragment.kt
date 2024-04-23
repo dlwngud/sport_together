@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import com.wngud.sport_together.R
 import com.wngud.sport_together.databinding.FragmentReviewBinding
 import dagger.hilt.android.AndroidEntryPoint
@@ -25,8 +26,16 @@ class ReviewFragment : Fragment() {
             fbtnReview.setOnClickListener {
                 it.findNavController().navigate(R.id.nav_add_review)
             }
+
+            toolbarReview.setNavigationOnClickListener {
+                backPress()
+            }
         }
 
         return binding.root
+    }
+
+    private fun backPress() {
+        findNavController().popBackStack()
     }
 }
