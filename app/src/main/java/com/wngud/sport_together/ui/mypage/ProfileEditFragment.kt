@@ -39,14 +39,17 @@ class ProfileEditFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_profile_edit ,container, false)
+        binding = FragmentProfileEditBinding.inflate(inflater ,container, false)
 
         binding.run {
             ivProfileProfileEdit.setOnClickListener {
                 setProfileImage()
             }
             btnProfileEdit.setOnClickListener {
-                saveProfile()
+                backPress()
+            }
+            toolbarProfileEdit.setNavigationOnClickListener {
+                backPress()
             }
         }
 
@@ -64,10 +67,7 @@ class ProfileEditFragment : Fragment() {
         )
     }
 
-    private fun saveProfile() {
-        App.currentUser.profileImage = imageUri.toString()
-        App.currentUser.nickname = binding.etNicknameProfileEdit.text.toString()
-        App.currentUser.introduce = binding.etIntroduceProfileEdit.text.toString()
+    private fun backPress() {
         findNavController().popBackStack()
     }
 }
