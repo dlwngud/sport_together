@@ -1,8 +1,10 @@
 package com.wngud.sport_together.ui.mypage
 
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.android.gms.tasks.Task
 import com.kakao.sdk.user.Constants
 import com.kakao.sdk.user.UserApiClient
 import com.wngud.sport_together.App
@@ -56,5 +58,9 @@ class MypageViewModel @Inject constructor(private val userRepository: UserReposi
     private fun getCurrentUser(uid: String) = viewModelScope.launch {
         val userInfo = userRepository.getUserInfo(uid).first()
         user.update { userInfo }
+    }
+
+    fun getUserProfile(fileName: String, callback: (Task<Uri>) -> Unit) = viewModelScope.launch {
+        userRepository.getUserProfile(fileName).addOnCompleteListener(callback)
     }
 }

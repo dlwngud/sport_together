@@ -1,5 +1,7 @@
 package com.wngud.sport_together.data.repository
 
+import android.net.Uri
+import com.google.android.gms.tasks.Task
 import com.wngud.sport_together.data.db.remote.UserDataSource
 import com.wngud.sport_together.domain.model.User
 import com.wngud.sport_together.domain.repository.UserRepository
@@ -13,5 +15,9 @@ class UserRepositoryImpl @Inject constructor(private val userDataSource: UserDat
 
     override suspend fun saveUserInfo(user: User) {
         userDataSource.saveUserInfo(user)
+    }
+
+    override suspend fun getUserProfile(fileName: String): Task<Uri> {
+        return userDataSource.getUserProfile(fileName)
     }
 }

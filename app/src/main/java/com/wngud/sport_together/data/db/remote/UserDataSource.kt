@@ -1,6 +1,8 @@
 package com.wngud.sport_together.data.db.remote
 
+import android.net.Uri
 import android.util.Log
+import com.google.android.gms.tasks.Task
 import com.kakao.sdk.user.Constants
 import com.wngud.sport_together.App
 import com.wngud.sport_together.domain.model.User
@@ -26,5 +28,9 @@ class UserDataSource {
                     e
                 )
             }
+    }
+
+    suspend fun getUserProfile(fileName: String): Task<Uri> {
+        return App.storage.reference.child(fileName).downloadUrl
     }
 }
