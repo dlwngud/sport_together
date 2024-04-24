@@ -5,7 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.wngud.sport_together.R
+import androidx.navigation.fragment.findNavController
 import com.wngud.sport_together.databinding.FragmentAddReviewBinding
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -19,6 +19,16 @@ class AddReviewFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentAddReviewBinding.inflate(layoutInflater, container, false)
+
+        binding.run {
+            toolbarAddReview.setNavigationOnClickListener {
+                backPress()
+            }
+        }
         return binding.root
+    }
+
+    private fun backPress() {
+        findNavController().popBackStack()
     }
 }

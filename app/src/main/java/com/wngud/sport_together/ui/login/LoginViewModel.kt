@@ -64,27 +64,13 @@ class LoginViewModel @Inject constructor(private val userRepository: UserReposit
                                 currentUser?.uid!!,
                                 currentUser.email!!,
                                 user.kakaoAccount?.profile?.nickname!!,
-                                "나를 소개해보세요",
-                                null,
-                                emptyList(),
-                                emptyList()
+                                "나를 소개해보세요"
                             )
+                            viewModelScope.launch {
+                                userRepository.saveUserInfo(userInfo)
+                            }
 
-                            App.currentUser = userInfo
-                            App.db.collection("users")
-                                .document(userInfo.uid)
-                                .set(userInfo)
-                                .addOnSuccessListener {
-                                    Log.d(TAG, "DocumentSnapshot successfully written!")
-                                    startEvent(LoginEvent.MoveToMain)
-                                }
-                                .addOnFailureListener { e ->
-                                    Log.w(
-                                        TAG,
-                                        "Error writing document",
-                                        e
-                                    )
-                                }
+                            startEvent(LoginEvent.MoveToMain)
                         } else {
                             Log.w(TAG, "createUserWithEmail:failure", task.exception)
                         }
@@ -103,22 +89,9 @@ class LoginViewModel @Inject constructor(private val userRepository: UserReposit
                         if (task.isSuccessful) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithEmail:success")
-
                             viewModelScope.launch {
-                                val u = userRepository.getUserInfo(auth.uid!!)
-                                val userInfo = User(
-                                    u.uid,
-                                    u.email,
-                                    u.nickname,
-                                    u.introduce,
-                                    u.profileImage,
-                                    u.follower,
-                                    u.following
-                                )
-                                App.currentUser = userInfo
-                                Log.i(TAG, App.currentUser.toString())
+                                userRepository.getUserInfo(auth.uid!!)
                             }
-
                             startEvent(LoginEvent.MoveToMain)
                         } else {
                             // If sign in fails, display a message to the user.
@@ -157,7 +130,6 @@ class LoginViewModel @Inject constructor(private val userRepository: UserReposit
                     UserApiClient.instance.loginWithKakaoAccount(context, callback = callback)
                 } else if (token != null) {
                     Log.i(TAG, "카카오톡으로 로그인 성공 ${token.accessToken}")
-                    startEvent(LoginEvent.MoveToMain)
                     signInFirebase()
                 }
             }

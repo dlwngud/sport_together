@@ -7,6 +7,7 @@ import com.kakao.sdk.user.Constants
 import com.kakao.sdk.user.UserApiClient
 import com.wngud.sport_together.App
 import com.wngud.sport_together.domain.model.User
+import com.wngud.sport_together.domain.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,14 +21,21 @@ sealed class MypageEvent {
 }
 
 @HiltViewModel
-class MypageViewModel @Inject constructor() : ViewModel() {
-    val user = MutableStateFlow<User>(User.Default)
+class MypageViewModel @Inject constructor(private val userRepository: UserRepository) :
+    ViewModel() {
+    val user = MutableStateFlow<User>(User())
 
     private val _eventFlow = MutableSharedFlow<MypageEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
 
     init {
-        getCurrentUser()
+        if (App.auth.currentUser != null) {
+            viewModelScope.launch {
+                getCurrentUser(App.auth.currentUser!!.uid)
+            }
+        } else {
+            Log.i("tag", "로그인 없음")
+        }
     }
 
     private fun startEvent(event: MypageEvent) = viewModelScope.launch {
@@ -45,8 +53,8 @@ class MypageViewModel @Inject constructor() : ViewModel() {
         }
     }
 
-    private fun getCurrentUser() {
-        user.update { App.currentUser }
-        Log.i("user", "${user.value.uid}")
+    private fun getCurrentUser(uid: String) = viewModelScope.launch {
+        val userInfo = userRepository.getUserInfo(uid).first()
+        user.update { userInfo }
     }
 }
