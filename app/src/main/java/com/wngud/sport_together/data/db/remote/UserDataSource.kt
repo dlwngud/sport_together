@@ -33,4 +33,8 @@ class UserDataSource {
     suspend fun getUserProfile(fileName: String): Task<Uri> {
         return App.storage.reference.child(fileName).downloadUrl
     }
+
+    suspend fun editUserProfile(fileName: String, uri: Uri) {
+        val uploadTask = App.storage.reference.child("images/users/${fileName}.jpg").putFile(uri)
+    }
 }

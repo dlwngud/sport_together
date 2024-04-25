@@ -10,4 +10,6 @@ interface UserRepository {
     suspend fun saveUserInfo(user: User)
 
     suspend fun getUserProfile(fileName: String): Task<Uri>
+
+    suspend fun editUserProfile(fileName: String, uri: Uri)
 }

@@ -66,6 +66,19 @@ class MypageFragment : Fragment() {
         return binding.root
     }
 
+    override fun onResume() {
+        super.onResume()
+        lifecycleScope.launch {
+            mypageViewModel.user.collect { user ->
+                if (user.profileImage.isNotEmpty()) {
+                    showProfile(user)
+                }
+                binding.tvNicknameMypage.text = user.nickname
+                binding.tvIntroduceMypage.text = user.introduce
+            }
+        }
+    }
+
     private fun showProfile(user: User) {
         mypageViewModel.getUserProfile(user.profileImage){
             if (it.isSuccessful) {

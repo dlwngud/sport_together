@@ -60,7 +60,16 @@ class MypageViewModel @Inject constructor(private val userRepository: UserReposi
         user.update { userInfo }
     }
 
+    fun editUserInfo(editUser: User) = viewModelScope.launch {
+        userRepository.saveUserInfo(editUser)
+        //user.update { editUser }
+    }
+
     fun getUserProfile(fileName: String, callback: (Task<Uri>) -> Unit) = viewModelScope.launch {
         userRepository.getUserProfile(fileName).addOnCompleteListener(callback)
+    }
+
+    fun editUserProfile(fileName: String, uri: Uri) = viewModelScope.launch {
+        userRepository.editUserProfile(fileName, uri)
     }
 }
