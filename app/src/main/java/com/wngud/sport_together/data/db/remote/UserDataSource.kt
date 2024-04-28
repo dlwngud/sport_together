@@ -6,28 +6,46 @@ import com.google.android.gms.tasks.Task
 import com.kakao.sdk.user.Constants
 import com.wngud.sport_together.App
 import com.wngud.sport_together.domain.model.User
-import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.withContext
 
 class UserDataSource {
-    suspend fun getUserInfo(uid: String): MutableList<User> {
-        val querySnapshot = App.db.collection("users").whereEqualTo("uid", uid).get().await()
-        return querySnapshot.toObjects(User::class.java)
+    suspend fun getUserInfo(uid: String) = callbackFlow {
+        App.db.collection("users").document(uid).addSnapshotListener { snapshot, e ->
+            if (e != null) {
+                return@addSnapshotListener
+            }
+
+            if (snapshot != null && snapshot.exists()) {
+                val data = snapshot.data
+                val introduce = data?.get("introduce").toString()
+                val nickname = data?.get("nickname").toString()
+                val profileImage = data?.get("profileImage").toString()
+                Log.i("tag", "data "+profileImage)
+                trySend(User(introduce = introduce, nickname = nickname, profileImage = profileImage))
+            }
+        }
+        awaitClose {  }
     }
 
     suspend fun saveUserInfo(user: User) {
-        App.db.collection("users")
-            .document(user.uid)
-            .set(user)
-            .addOnSuccessListener {
-                Log.d(Constants.TAG, "DocumentSnapshot successfully written!")
-            }
-            .addOnFailureListener { e ->
-                Log.w(
-                    Constants.TAG,
-                    "Error writing document",
-                    e
-                )
-            }
+        withContext(Dispatchers.IO){
+            App.db.collection("users")
+                .document(App.auth.currentUser!!.uid)
+                .set(user)
+                .addOnSuccessListener {
+                    Log.d(Constants.TAG, "DocumentSnapshot successfully written!")
+                }
+                .addOnFailureListener { e ->
+                    Log.w(
+                        Constants.TAG,
+                        "Error writing document",
+                        e
+                    )
+                }
+        }
     }
 
     suspend fun getUserProfile(fileName: String): Task<Uri> {

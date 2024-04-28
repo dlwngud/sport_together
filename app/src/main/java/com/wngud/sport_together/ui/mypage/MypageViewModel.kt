@@ -14,6 +14,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -25,7 +27,8 @@ sealed class MypageEvent {
 @HiltViewModel
 class MypageViewModel @Inject constructor(private val userRepository: UserRepository) :
     ViewModel() {
-    val user = MutableStateFlow<User>(User())
+    private val _user = MutableStateFlow(User())
+    val user = _user.asStateFlow()
 
     private val _eventFlow = MutableSharedFlow<MypageEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
@@ -56,11 +59,13 @@ class MypageViewModel @Inject constructor(private val userRepository: UserReposi
     }
 
     private fun getCurrentUser(uid: String) = viewModelScope.launch {
-        val userInfo = userRepository.getUserInfo(uid).first()
-        user.update { userInfo }
+        userRepository.getUserInfo(uid).collect { user ->
+            _user.update { user }
+            Log.i("tag", "vm " + _user.value.profileImage) // 로그 문장을 여기로 이동
+        }
     }
 
-    fun editUserInfo(editUser: User) = viewModelScope.launch {
+    suspend fun editUserInfo(editUser: User) = viewModelScope.launch {
         userRepository.saveUserInfo(editUser)
         //user.update { editUser }
     }

@@ -2,6 +2,7 @@ package com.wngud.sport_together.ui.mypage
 
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -12,6 +13,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
+import com.wngud.sport_together.App
 import com.wngud.sport_together.R
 import com.wngud.sport_together.databinding.FragmentProfileEditBinding
 import com.wngud.sport_together.domain.model.User
@@ -76,19 +78,24 @@ class ProfileEditFragment : Fragment() {
     }
 
     private fun editProfile() {
-        val fileName = mypageViewModel.user.value.uid
-        if(imageUri != null){
-            mypageViewModel.editUserProfile(fileName, imageUri!!)
+        lifecycleScope.launch {
+            val fileName = App.auth.currentUser!!.uid
+            if (imageUri != null) {
+                mypageViewModel.editUserProfile(fileName, imageUri!!)
+            }
+            val editNickname = binding.etNicknameProfileEdit.text.toString()
+            val editIntroduce = binding.etIntroduceProfileEdit.text.toString()
+            val editUser = User(
+                email = App.auth.currentUser!!.email!!,
+                uid = App.auth.currentUser!!.uid,
+                nickname = editNickname,
+                introduce = editIntroduce,
+                profileImage = "images/users/${fileName}.jpg"
+            )
+            Log.i("tag","filename "+fileName)
+            mypageViewModel.editUserInfo(editUser)
+            backPress()
         }
-        val editNickname = binding.etNicknameProfileEdit.text.toString()
-        val editIntroduce = binding.etIntroduceProfileEdit.text.toString()
-        val editUser = mypageViewModel.user.value.copy(
-            nickname = editNickname,
-            introduce = editIntroduce,
-            profileImage = "images/users/${fileName}.jpg"
-        )
-        mypageViewModel.editUserInfo(editUser)
-        backPress()
     }
 
     private fun setProfileImage() {

@@ -1,16 +1,22 @@
 package com.wngud.sport_together.data.repository
 
 import android.net.Uri
+import android.util.Log
 import com.google.android.gms.tasks.Task
 import com.wngud.sport_together.data.db.remote.UserDataSource
 import com.wngud.sport_together.domain.model.User
 import com.wngud.sport_together.domain.repository.UserRepository
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 class UserRepositoryImpl @Inject constructor(private val userDataSource: UserDataSource) :
     UserRepository {
-    override suspend fun getUserInfo(uid: String): MutableList<User> {
-        return userDataSource.getUserInfo(uid)
+    override suspend fun getUserInfo(uid: String): Flow<User> {
+        val a = userDataSource.getUserInfo(uid)
+        Log.i("tag", "repo "+a.first().profileImage)
+        return a
     }
 
     override suspend fun saveUserInfo(user: User) {

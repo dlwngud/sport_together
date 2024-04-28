@@ -20,6 +20,7 @@ import com.wngud.sport_together.ui.login.LoginActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -62,6 +63,20 @@ class MypageFragment : Fragment() {
                 }
             }
         }
+//        val docRef = App.db.collection("users").document(App.auth.currentUser!!.uid)
+//        docRef.addSnapshotListener { snapshot, e ->
+//            if (e != null) {
+//                return@addSnapshotListener
+//            }
+//            if (snapshot != null && snapshot.exists()) {
+//                Log.d("tag", "Current data: ${snapshot.data}")
+//                val data = snapshot.data
+//                val introduce = data?.get("introduce").toString()
+//                val nickname = data?.get("nickname").toString()
+//                val profileImage = data?.get("profileImage").toString()
+//                mypageViewModel.user.update { User(introduce = introduce, nickname = nickname, profileImage = profileImage) }
+//            }
+//        }
         observeUiEvent()
         return binding.root
     }
