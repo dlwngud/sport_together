@@ -60,6 +60,8 @@ class MypageFragment : Fragment() {
                     }
                     tvNicknameMypage.text = user.nickname
                     tvIntroduceMypage.text = user.introduce
+                    tvFollowerMypage.text = "팔로워 ${user.follower.size}"
+                    tvFollowingMypage.text = "팔로잉 ${user.following.size}"
                 }
             }
         }

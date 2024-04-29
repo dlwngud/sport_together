@@ -23,8 +23,10 @@ class UserDataSource {
                 val introduce = data?.get("introduce").toString()
                 val nickname = data?.get("nickname").toString()
                 val profileImage = data?.get("profileImage").toString()
-                Log.i("tag", "data "+profileImage)
-                trySend(User(introduce = introduce, nickname = nickname, profileImage = profileImage))
+                val follower = data?.get("follower") as? List<String> ?: emptyList()
+                val following = data?.get("following") as? List<String> ?: emptyList()
+                Log.i("tag", "data "+follower)
+                trySend(User(introduce = introduce, nickname = nickname, profileImage = profileImage, follower = follower, following = following))
             }
         }
         awaitClose {  }

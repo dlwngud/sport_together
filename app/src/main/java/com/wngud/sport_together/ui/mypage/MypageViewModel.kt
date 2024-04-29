@@ -61,7 +61,7 @@ class MypageViewModel @Inject constructor(private val userRepository: UserReposi
     private fun getCurrentUser(uid: String) = viewModelScope.launch {
         userRepository.getUserInfo(uid).collect { user ->
             _user.update { user }
-            Log.i("tag", "vm " + _user.value.profileImage) // 로그 문장을 여기로 이동
+            Log.i("tag", "vm " + _user.value.follower.size) // 로그 문장을 여기로 이동
         }
     }
 

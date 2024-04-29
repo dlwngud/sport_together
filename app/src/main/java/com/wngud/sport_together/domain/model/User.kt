@@ -6,8 +6,8 @@ data class User(
     val nickname: String = "",
     val introduce: String = "",
     val profileImage: String = "",
-    val follower: List<User> = emptyList(),
-    val following: List<User> = emptyList()
+    val follower: List<String> = emptyList(),
+    val following: List<String> = emptyList()
 ) {
     companion object {
         val Default = User(

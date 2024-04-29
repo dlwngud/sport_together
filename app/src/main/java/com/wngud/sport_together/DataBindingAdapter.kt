@@ -1,8 +1,10 @@
 package com.wngud.sport_together
 
 import android.view.View
+import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import com.wngud.sport_together.ui.login.LoginUiState
+import java.text.DecimalFormat
 
 object DataBindingAdapter {
 
@@ -25,5 +27,21 @@ object DataBindingAdapter {
             return
         }
         view.visibility = View.VISIBLE
+    }
+
+    @JvmStatic
+    @BindingAdapter("followingCount")
+    fun formattedFollow(view: TextView, followingCount: Int) {
+        val numberFormatter = DecimalFormat("###,###")
+        val text = "팔로잉 ${numberFormatter.format(followingCount)}"
+        view.text = text
+    }
+
+    @JvmStatic
+    @BindingAdapter("followerCount")
+    fun formattedFollower(view: TextView, followerCount: Int) {
+        val numberFormatter = DecimalFormat("###,###")
+        val text = "팔로워 ${numberFormatter.format(followerCount)}"
+        view.text = text
     }
 }

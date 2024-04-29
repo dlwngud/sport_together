@@ -8,15 +8,14 @@ import com.wngud.sport_together.domain.model.User
 import com.wngud.sport_together.domain.repository.UserRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 class UserRepositoryImpl @Inject constructor(private val userDataSource: UserDataSource) :
     UserRepository {
     override suspend fun getUserInfo(uid: String): Flow<User> {
-        val a = userDataSource.getUserInfo(uid)
-        Log.i("tag", "repo "+a.first().profileImage)
-        return a
+        val userInfo = userDataSource.getUserInfo(uid)
+        Log.i("tag", "repo "+userInfo.first().profileImage)
+        return userInfo
     }
 
     override suspend fun saveUserInfo(user: User) {
