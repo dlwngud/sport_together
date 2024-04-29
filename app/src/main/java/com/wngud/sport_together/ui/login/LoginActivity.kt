@@ -23,6 +23,11 @@ class LoginActivity : AppCompatActivity() {
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        binding.run {
+            lifecycleOwner = this@LoginActivity
+            viewmodel = loginViewModel
+        }
+
         kakaoLogin()
         observeUiEvent()
     }

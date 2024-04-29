@@ -12,7 +12,6 @@ import com.kakao.sdk.common.model.ClientError
 import com.kakao.sdk.common.model.ClientErrorCause
 import com.kakao.sdk.user.Constants.TAG
 import com.kakao.sdk.user.UserApiClient
-import com.wngud.sport_together.App
 import com.wngud.sport_together.domain.model.User
 import com.wngud.sport_together.domain.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,13 +20,15 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 sealed interface LoginUiState {
-    data class Success(val user: User) : LoginUiState
-    object Error : LoginUiState
-    object loading : LoginUiState
+    object Success : LoginUiState
+    data class Error(val errorMessage: String) : LoginUiState
+    object Loading : LoginUiState
+    object Default: LoginUiState
 }
 
 sealed class LoginEvent {
@@ -40,7 +41,7 @@ class LoginViewModel @Inject constructor(private val userRepository: UserReposit
 
     private var auth: FirebaseAuth = Firebase.auth
 
-    private val _uiState = MutableStateFlow(LoginUiState.loading)
+    private val _uiState = MutableStateFlow<LoginUiState>(LoginUiState.Default)
     val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
 
     private val _eventFlow = MutableSharedFlow<LoginEvent>()
@@ -69,9 +70,10 @@ class LoginViewModel @Inject constructor(private val userRepository: UserReposit
                             viewModelScope.launch {
                                 userRepository.saveUserInfo(userInfo)
                             }
-
+                            _uiState.update { LoginUiState.Success }
                             startEvent(LoginEvent.MoveToMain)
                         } else {
+                            _uiState.update { LoginUiState.Error("로그인 실패") }
                             Log.w(TAG, "createUserWithEmail:failure", task.exception)
                         }
                     }
@@ -92,6 +94,7 @@ class LoginViewModel @Inject constructor(private val userRepository: UserReposit
                             viewModelScope.launch {
                                 userRepository.getUserInfo(auth.uid!!)
                             }
+                            _uiState.update { LoginUiState.Success }
                             startEvent(LoginEvent.MoveToMain)
                         } else {
                             // If sign in fails, display a message to the user.
@@ -104,9 +107,11 @@ class LoginViewModel @Inject constructor(private val userRepository: UserReposit
     }
 
     fun loginKakao(context: Context) {
+        _uiState.update { LoginUiState.Loading }
         val callback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
             if (error != null) {
                 Log.e(TAG, "카카오계정으로 로그인 실패", error)
+                _uiState.update { LoginUiState.Default }
                 startEvent(LoginEvent.KakaoLoginFail)
             } else if (token != null) {
                 Log.i(TAG, "카카오계정으로 로그인 성공 ${token.accessToken}")
@@ -123,6 +128,7 @@ class LoginViewModel @Inject constructor(private val userRepository: UserReposit
                     // 사용자가 카카오톡 설치 후 디바이스 권한 요청 화면에서 로그인을 취소한 경우,
                     // 의도적인 로그인 취소로 보고 카카오계정으로 로그인 시도 없이 로그인 취소로 처리 (예: 뒤로 가기)
                     if (error is ClientError && error.reason == ClientErrorCause.Cancelled) {
+                        _uiState.update { LoginUiState.Default }
                         return@loginWithKakaoTalk
                     }
 
