@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.navigation.findNavController
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.kakao.sdk.user.Constants.TAG
 import com.kakao.sdk.user.UserApiClient
 import com.naver.maps.map.LocationTrackingMode
@@ -38,6 +39,8 @@ class NaverMapFragment : Fragment(), OnMapReadyCallback {
         Manifest.permission.ACCESS_COARSE_LOCATION
     )
 
+    private lateinit var persistentBottomSheet: BottomSheetBehavior<View>
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
@@ -55,13 +58,14 @@ class NaverMapFragment : Fragment(), OnMapReadyCallback {
             )
         } else {
             initMapView()
-            a()
+            setBottomSheet()
+            getInfo()
         }
 
         return binding.root
     }
 
-    fun a() {
+    fun getInfo() {
         UserApiClient.instance.me { user, error ->
             if (error != null) {
                 Log.e(TAG, "사용자 정보 요청 실패", error)
@@ -73,6 +77,20 @@ class NaverMapFragment : Fragment(), OnMapReadyCallback {
                         "\n닉네임: ${user.kakaoAccount?.profile?.nickname}" +
                         "\n프로필사진: ${user.kakaoAccount?.profile?.thumbnailImageUrl}")
             }
+        }
+    }
+
+    private fun setBottomSheet() {
+        persistentBottomSheet = BottomSheetBehavior.from(binding.bottomSheetMap)
+    }
+
+    val bottomSheetCallback = object : BottomSheetBehavior.BottomSheetCallback() {
+        override fun onStateChanged(bottomSheet: View, newState: Int) {
+
+        }
+
+        override fun onSlide(bottomSheet: View, slideOffset: Float) {
+
         }
     }
 
