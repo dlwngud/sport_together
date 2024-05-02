@@ -20,6 +20,7 @@ import com.naver.maps.map.MapFragment
 import com.naver.maps.map.NaverMap
 import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.overlay.Marker
+import com.naver.maps.map.overlay.OverlayImage
 import com.naver.maps.map.util.FusedLocationSource
 import com.wngud.sport_together.R
 import com.wngud.sport_together.databinding.FragmentMapBinding
@@ -86,7 +87,8 @@ class NaverMapFragment : Fragment(), OnMapReadyCallback {
     private fun setBottomSheet() {
         persistentBottomSheet = BottomSheetBehavior.from(binding.bottomSheetMap)
         persistentBottomSheet.state = BottomSheetBehavior.STATE_HIDDEN
-        persistentBottomSheet.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+        persistentBottomSheet.addBottomSheetCallback(object :
+            BottomSheetBehavior.BottomSheetCallback() {
             override fun onStateChanged(bottomSheet: View, newState: Int) {
 
             }
@@ -122,13 +124,15 @@ class NaverMapFragment : Fragment(), OnMapReadyCallback {
     override fun onMapReady(naverMap: NaverMap) {
         this.naverMap = naverMap
         naverMap.locationSource = locationSource
+        binding.compassView.map = naverMap
 
         naverMap.uiSettings.isLocationButtonEnabled = true
+        naverMap.uiSettings.isCompassEnabled = false
         naverMap.locationTrackingMode = LocationTrackingMode.Follow
 
         naverMap.setOnMapClickListener { pointF, latLng ->
             Log.i("tag", "${latLng.latitude}, ${latLng.longitude}")
-            if(persistentBottomSheet.state == BottomSheetBehavior.STATE_COLLAPSED){
+            if (persistentBottomSheet.state == BottomSheetBehavior.STATE_COLLAPSED) {
                 persistentBottomSheet.state = BottomSheetBehavior.STATE_HIDDEN
             }
         }
@@ -140,6 +144,9 @@ class NaverMapFragment : Fragment(), OnMapReadyCallback {
                 true
             }
             position = LatLng(37.3714281566433, 127.25022443158156)
+            icon = OverlayImage.fromResource(R.drawable.ic_gym)
+            width = 80
+            height = 80
             map = naverMap
         }
     }
