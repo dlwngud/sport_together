@@ -1,6 +1,7 @@
 package com.wngud.sport_together.ui.map
 
 import android.Manifest
+import android.app.AlertDialog
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
@@ -10,8 +11,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.os.bundleOf
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.snackbar.Snackbar
 import com.kakao.sdk.user.Constants.TAG
 import com.kakao.sdk.user.UserApiClient
 import com.naver.maps.geometry.LatLng
@@ -137,6 +141,10 @@ class NaverMapFragment : Fragment(), OnMapReadyCallback {
             }
         }
 
+        naverMap.setOnMapLongClickListener { pointF, latLng ->
+            showDialog(latLng)
+        }
+
         val marker = Marker()
         marker.run {
             setOnClickListener {
@@ -149,5 +157,18 @@ class NaverMapFragment : Fragment(), OnMapReadyCallback {
             height = 80
             map = naverMap
         }
+    }
+
+    private fun showDialog(latLng: LatLng) {
+        val builder = AlertDialog.Builder(requireContext())
+        builder.setTitle("이곳에서 운동 친구를 모집하겠습니까?")
+            .setPositiveButton("네") { dialog, which ->
+                findNavController().navigate(R.id.nav_recruitment, bundleOf("lat" to latLng.latitude, "lng" to latLng.longitude))
+            }
+            .setNegativeButton("아니오") { dialog, which ->
+
+            }
+            .create()
+            .show()
     }
 }
