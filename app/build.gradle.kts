@@ -91,4 +91,10 @@ dependencies {
 
     // glide
     implementation("com.github.bumptech.glide:glide:4.16.0")
+
+    // dots Indicator
+    implementation("com.tbuonomo:dotsindicator:5.0")
+
+    // lottie
+    implementation("com.airbnb.android:lottie:5.0.2")
 }
