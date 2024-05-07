@@ -12,10 +12,11 @@ import android.view.ViewGroup
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.android.material.snackbar.Snackbar
 import com.kakao.sdk.user.Constants.TAG
 import com.kakao.sdk.user.UserApiClient
 import com.naver.maps.geometry.LatLng
@@ -28,7 +29,10 @@ import com.naver.maps.map.overlay.OverlayImage
 import com.naver.maps.map.util.FusedLocationSource
 import com.wngud.sport_together.R
 import com.wngud.sport_together.databinding.FragmentMapBinding
+import com.wngud.sport_together.domain.model.Exercise
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class NaverMapFragment : Fragment(), OnMapReadyCallback {
@@ -37,6 +41,7 @@ class NaverMapFragment : Fragment(), OnMapReadyCallback {
     }
 
     private lateinit var binding: FragmentMapBinding
+    private val mapViewModel: MapViewModel by viewModels()
 
     private lateinit var locationSource: FusedLocationSource
     private lateinit var naverMap: NaverMap
@@ -55,6 +60,10 @@ class NaverMapFragment : Fragment(), OnMapReadyCallback {
 
         binding.searchMap.setOnClickListener {
             it.findNavController().navigate(R.id.nav_search)
+        }
+
+        binding.btn.setOnClickListener {
+            mapViewModel.getAllExercises()
         }
 
         if (!hasPermission()) {
@@ -145,17 +154,42 @@ class NaverMapFragment : Fragment(), OnMapReadyCallback {
             showDialog(latLng)
         }
 
-        val marker = Marker()
-        marker.run {
-            setOnClickListener {
-                persistentBottomSheet.state = BottomSheetBehavior.STATE_COLLAPSED
-                true
+        mapViewModel.getAllExercises()
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            mapViewModel.uiState.collectLatest {
+                Log.i("exercise", "감지")
+                showMarkers(it.exercises)
             }
-            position = LatLng(37.3714281566433, 127.25022443158156)
-            icon = OverlayImage.fromResource(R.drawable.ic_gym)
-            width = 80
-            height = 80
-            map = naverMap
+        }
+    }
+
+    private fun showMarkers(exerciseList: List<Exercise>) {
+        for (exercise in exerciseList) {
+            val (lat, lng) = exercise.location.split(" ").map { it.toDouble() }
+            val marker = Marker()
+            marker.run {
+                setOnClickListener {
+                    persistentBottomSheet.state = BottomSheetBehavior.STATE_COLLAPSED
+                    true
+                }
+                position = LatLng(lat, lng)
+                icon = when (exercise.type) {
+                    "자전거" -> OverlayImage.fromResource(R.drawable.ic_bicycle)
+                    "등산" -> OverlayImage.fromResource(R.drawable.ic_hiking)
+                    "탁구" -> OverlayImage.fromResource(R.drawable.ic_table_tennis)
+                    "배드민턴" -> OverlayImage.fromResource(R.drawable.ic_badminton)
+                    "볼링" -> OverlayImage.fromResource(R.drawable.ic_bowling)
+                    "테니스" -> OverlayImage.fromResource(R.drawable.ic_tennis)
+                    "런닝" -> OverlayImage.fromResource(R.drawable.ic_running)
+                    "헬스" -> OverlayImage.fromResource(R.drawable.ic_gym)
+                    else -> OverlayImage.fromResource(R.drawable.ic_etc)
+                }
+                captionText = exercise.type
+                width = 80
+                height = 80
+                map = naverMap
+            }
         }
     }
 
@@ -163,7 +197,10 @@ class NaverMapFragment : Fragment(), OnMapReadyCallback {
         val builder = AlertDialog.Builder(requireContext())
         builder.setTitle("이곳에서 운동 친구를 모집하겠습니까?")
             .setPositiveButton("네") { dialog, which ->
-                findNavController().navigate(R.id.nav_recruitment, bundleOf("lat" to latLng.latitude, "lng" to latLng.longitude))
+                findNavController().navigate(
+                    R.id.nav_recruitment,
+                    bundleOf("lat" to latLng.latitude, "lng" to latLng.longitude)
+                )
             }
             .setNegativeButton("아니오") { dialog, which ->
 
