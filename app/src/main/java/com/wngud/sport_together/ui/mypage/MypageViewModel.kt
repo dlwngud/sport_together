@@ -15,7 +15,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -61,14 +60,19 @@ class MypageViewModel @Inject constructor(private val userRepository: UserReposi
     private fun getCurrentUser(uid: String) = viewModelScope.launch {
         userRepository.getUserInfo(uid).collect { user ->
             _user.update { user }
-            Log.i("tag", "vm " + _user.value.follower.size) // 로그 문장을 여기로 이동
         }
     }
 
-    suspend fun editUserInfo(editUser: User) = viewModelScope.launch {
-        userRepository.saveUserInfo(editUser)
-        //user.update { editUser }
-    }
+    suspend fun editUserInfo(editNickname: String, editIntroduce: String, profileImage: String) =
+        viewModelScope.launch {
+            val editUser = user.value.copy(
+                profileImage = profileImage,
+                nickname = editNickname,
+                introduce = editIntroduce
+            )
+            userRepository.saveUserInfo(editUser)
+            _user.update { editUser }
+        }
 
     fun getUserProfile(fileName: String, callback: (Task<Uri>) -> Unit) = viewModelScope.launch {
         userRepository.getUserProfile(fileName).addOnCompleteListener(callback)

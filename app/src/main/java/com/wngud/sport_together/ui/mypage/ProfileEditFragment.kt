@@ -58,6 +58,9 @@ class ProfileEditFragment : Fragment() {
                     }
                     etNicknameProfileEdit.setText(user.nickname)
                     etIntroduceProfileEdit.setText(user.introduce)
+                    Log.i("tag_edit",user.email)
+                    Log.i("tag_edit",user.introduce)
+                    Log.i("tag_edit",user.nickname)
                 }
             }
         }
@@ -85,15 +88,8 @@ class ProfileEditFragment : Fragment() {
             }
             val editNickname = binding.etNicknameProfileEdit.text.toString()
             val editIntroduce = binding.etIntroduceProfileEdit.text.toString()
-            val editUser = User(
-                email = App.auth.currentUser!!.email!!,
-                uid = App.auth.currentUser!!.uid,
-                nickname = editNickname,
-                introduce = editIntroduce,
-                profileImage = "images/users/${fileName}.jpg"
-            )
-            Log.i("tag","filename "+fileName)
-            mypageViewModel.editUserInfo(editUser)
+            val profileImage = "images/users/${fileName}.jpg"
+            mypageViewModel.editUserInfo(editNickname, editIntroduce, profileImage)
             backPress()
         }
     }
