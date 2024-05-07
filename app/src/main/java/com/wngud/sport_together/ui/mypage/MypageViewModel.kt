@@ -1,16 +1,21 @@
 package com.wngud.sport_together.ui.mypage
 
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.android.gms.tasks.Task
 import com.kakao.sdk.user.Constants
 import com.kakao.sdk.user.UserApiClient
 import com.wngud.sport_together.App
 import com.wngud.sport_together.domain.model.User
+import com.wngud.sport_together.domain.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -20,14 +25,22 @@ sealed class MypageEvent {
 }
 
 @HiltViewModel
-class MypageViewModel @Inject constructor() : ViewModel() {
-    val user = MutableStateFlow<User>(User.Default)
+class MypageViewModel @Inject constructor(private val userRepository: UserRepository) :
+    ViewModel() {
+    private val _user = MutableStateFlow(User())
+    val user = _user.asStateFlow()
 
     private val _eventFlow = MutableSharedFlow<MypageEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
 
     init {
-        getCurrentUser()
+        if (App.auth.currentUser != null) {
+            viewModelScope.launch {
+                getCurrentUser(App.auth.currentUser!!.uid)
+            }
+        } else {
+            Log.i("tag", "로그인 없음")
+        }
     }
 
     private fun startEvent(event: MypageEvent) = viewModelScope.launch {
@@ -45,8 +58,23 @@ class MypageViewModel @Inject constructor() : ViewModel() {
         }
     }
 
-    private fun getCurrentUser() {
-        user.update { App.currentUser }
-        Log.i("user", "${user.value.uid}")
+    private fun getCurrentUser(uid: String) = viewModelScope.launch {
+        userRepository.getUserInfo(uid).collect { user ->
+            _user.update { user }
+            Log.i("tag", "vm " + _user.value.follower.size) // 로그 문장을 여기로 이동
+        }
+    }
+
+    suspend fun editUserInfo(editUser: User) = viewModelScope.launch {
+        userRepository.saveUserInfo(editUser)
+        //user.update { editUser }
+    }
+
+    fun getUserProfile(fileName: String, callback: (Task<Uri>) -> Unit) = viewModelScope.launch {
+        userRepository.getUserProfile(fileName).addOnCompleteListener(callback)
+    }
+
+    fun editUserProfile(fileName: String, uri: Uri) = viewModelScope.launch {
+        userRepository.editUserProfile(fileName, uri)
     }
 }

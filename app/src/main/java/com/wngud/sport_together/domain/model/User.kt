@@ -4,10 +4,10 @@ data class User(
     val uid: String = "",
     val email: String = "",
     val nickname: String = "",
-    val introduce: String? = null,
-    val profileImage: String? = null,
-    val follower: List<User> = emptyList(),
-    val following: List<User> = emptyList()
+    val introduce: String = "",
+    val profileImage: String = "",
+    val follower: List<String> = emptyList(),
+    val following: List<String> = emptyList()
 ) {
     companion object {
         val Default = User(

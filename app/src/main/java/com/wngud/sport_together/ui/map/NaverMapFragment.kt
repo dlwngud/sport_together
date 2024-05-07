@@ -1,6 +1,7 @@
 package com.wngud.sport_together.ui.map
 
 import android.Manifest
+import android.app.AlertDialog
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
@@ -10,17 +11,28 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.os.bundleOf
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.kakao.sdk.user.Constants.TAG
 import com.kakao.sdk.user.UserApiClient
+import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.MapFragment
 import com.naver.maps.map.NaverMap
 import com.naver.maps.map.OnMapReadyCallback
+import com.naver.maps.map.overlay.Marker
+import com.naver.maps.map.overlay.OverlayImage
 import com.naver.maps.map.util.FusedLocationSource
 import com.wngud.sport_together.R
 import com.wngud.sport_together.databinding.FragmentMapBinding
+import com.wngud.sport_together.domain.model.Exercise
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class NaverMapFragment : Fragment(), OnMapReadyCallback {
@@ -29,6 +41,7 @@ class NaverMapFragment : Fragment(), OnMapReadyCallback {
     }
 
     private lateinit var binding: FragmentMapBinding
+    private val mapViewModel: MapViewModel by viewModels()
 
     private lateinit var locationSource: FusedLocationSource
     private lateinit var naverMap: NaverMap
@@ -37,6 +50,8 @@ class NaverMapFragment : Fragment(), OnMapReadyCallback {
         Manifest.permission.ACCESS_FINE_LOCATION,
         Manifest.permission.ACCESS_COARSE_LOCATION
     )
+
+    private lateinit var persistentBottomSheet: BottomSheetBehavior<View>
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -47,6 +62,10 @@ class NaverMapFragment : Fragment(), OnMapReadyCallback {
             it.findNavController().navigate(R.id.nav_search)
         }
 
+        binding.btn.setOnClickListener {
+            mapViewModel.getAllExercises()
+        }
+
         if (!hasPermission()) {
             ActivityCompat.requestPermissions(
                 requireActivity(),
@@ -55,25 +74,42 @@ class NaverMapFragment : Fragment(), OnMapReadyCallback {
             )
         } else {
             initMapView()
-            a()
+            setBottomSheet()
+            getInfo()
         }
 
         return binding.root
     }
 
-    fun a() {
+    fun getInfo() {
         UserApiClient.instance.me { user, error ->
             if (error != null) {
                 Log.e(TAG, "사용자 정보 요청 실패", error)
-            }
-            else if (user != null) {
-                Log.i(TAG, "사용자 정보 요청 성공" +
-                        "\n회원번호: ${user.id}" +
-                        "\n이메일: ${user.kakaoAccount?.email}" +
-                        "\n닉네임: ${user.kakaoAccount?.profile?.nickname}" +
-                        "\n프로필사진: ${user.kakaoAccount?.profile?.thumbnailImageUrl}")
+            } else if (user != null) {
+                Log.i(
+                    TAG, "사용자 정보 요청 성공" +
+                            "\n회원번호: ${user.id}" +
+                            "\n이메일: ${user.kakaoAccount?.email}" +
+                            "\n닉네임: ${user.kakaoAccount?.profile?.nickname}" +
+                            "\n프로필사진: ${user.kakaoAccount?.profile?.thumbnailImageUrl}"
+                )
             }
         }
+    }
+
+    private fun setBottomSheet() {
+        persistentBottomSheet = BottomSheetBehavior.from(binding.bottomSheetMap)
+        persistentBottomSheet.state = BottomSheetBehavior.STATE_HIDDEN
+        persistentBottomSheet.addBottomSheetCallback(object :
+            BottomSheetBehavior.BottomSheetCallback() {
+            override fun onStateChanged(bottomSheet: View, newState: Int) {
+
+            }
+
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {
+
+            }
+        })
     }
 
     private fun initMapView() {
@@ -101,8 +137,75 @@ class NaverMapFragment : Fragment(), OnMapReadyCallback {
     override fun onMapReady(naverMap: NaverMap) {
         this.naverMap = naverMap
         naverMap.locationSource = locationSource
+        binding.compassView.map = naverMap
 
         naverMap.uiSettings.isLocationButtonEnabled = true
+        naverMap.uiSettings.isCompassEnabled = false
         naverMap.locationTrackingMode = LocationTrackingMode.Follow
+
+        naverMap.setOnMapClickListener { pointF, latLng ->
+            Log.i("tag", "${latLng.latitude}, ${latLng.longitude}")
+            if (persistentBottomSheet.state == BottomSheetBehavior.STATE_COLLAPSED) {
+                persistentBottomSheet.state = BottomSheetBehavior.STATE_HIDDEN
+            }
+        }
+
+        naverMap.setOnMapLongClickListener { pointF, latLng ->
+            showDialog(latLng)
+        }
+
+        mapViewModel.getAllExercises()
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            mapViewModel.uiState.collectLatest {
+                Log.i("exercise", "감지")
+                showMarkers(it.exercises)
+            }
+        }
+    }
+
+    private fun showMarkers(exerciseList: List<Exercise>) {
+        for (exercise in exerciseList) {
+            val (lat, lng) = exercise.location.split(" ").map { it.toDouble() }
+            val marker = Marker()
+            marker.run {
+                setOnClickListener {
+                    persistentBottomSheet.state = BottomSheetBehavior.STATE_COLLAPSED
+                    true
+                }
+                position = LatLng(lat, lng)
+                icon = when (exercise.type) {
+                    "자전거" -> OverlayImage.fromResource(R.drawable.ic_bicycle)
+                    "등산" -> OverlayImage.fromResource(R.drawable.ic_hiking)
+                    "탁구" -> OverlayImage.fromResource(R.drawable.ic_table_tennis)
+                    "배드민턴" -> OverlayImage.fromResource(R.drawable.ic_badminton)
+                    "볼링" -> OverlayImage.fromResource(R.drawable.ic_bowling)
+                    "테니스" -> OverlayImage.fromResource(R.drawable.ic_tennis)
+                    "런닝" -> OverlayImage.fromResource(R.drawable.ic_running)
+                    "헬스" -> OverlayImage.fromResource(R.drawable.ic_gym)
+                    else -> OverlayImage.fromResource(R.drawable.ic_etc)
+                }
+                captionText = exercise.type
+                width = 80
+                height = 80
+                map = naverMap
+            }
+        }
+    }
+
+    private fun showDialog(latLng: LatLng) {
+        val builder = AlertDialog.Builder(requireContext())
+        builder.setTitle("이곳에서 운동 친구를 모집하겠습니까?")
+            .setPositiveButton("네") { dialog, which ->
+                findNavController().navigate(
+                    R.id.nav_recruitment,
+                    bundleOf("lat" to latLng.latitude, "lng" to latLng.longitude)
+                )
+            }
+            .setNegativeButton("아니오") { dialog, which ->
+
+            }
+            .create()
+            .show()
     }
 }

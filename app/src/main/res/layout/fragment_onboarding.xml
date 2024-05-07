@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".ui.onboard.OnboardingFragment">
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/lottie_onboarding"
+        android:layout_width="300dp"
+        android:layout_height="0dp"
+        app:layout_constraintDimensionRatio="1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:lottie_loop="true" />
+
+    <TextView
+        android:id="@+id/tv_onboarding"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:maxLines="2"
+        android:gravity="center"
+        android:text="이제 걱정 끝!\n운동하는 친구들을 쉽게 찾아 봐요!"
+        app:layout_constraintEnd_toEndOf="@id/lottie_onboarding"
+        app:layout_constraintStart_toStartOf="@id/lottie_onboarding"
+        app:layout_constraintTop_toBottomOf="@id/lottie_onboarding"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
