@@ -101,7 +101,7 @@
         android:backgroundTint="@color/white"
         android:clickable="true"
         android:focusable="true"
-        android:maxHeight="632dp"
+        android:maxHeight="120dp"
         app:behavior_hideable="true"
         app:behavior_peekHeight="120dp"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
