@@ -147,6 +147,8 @@ class NaverMapFragment : Fragment(), OnMapReadyCallback {
         naverMap.uiSettings.isLocationButtonEnabled = true
         naverMap.uiSettings.isCompassEnabled = false
         naverMap.locationTrackingMode = LocationTrackingMode.Follow
+        naverMap.minZoom = 10.0
+        naverMap.maxZoom = 18.0
 
         naverMap.setOnMapClickListener { pointF, latLng ->
             Log.i("tag", "${latLng.latitude}, ${latLng.longitude}")
@@ -205,7 +207,9 @@ class NaverMapFragment : Fragment(), OnMapReadyCallback {
             marker.run {
                 setOnClickListener {
                     persistentBottomSheet.state = BottomSheetBehavior.STATE_COLLAPSED
-                    Snackbar.make(requireView(), exercise.title, Snackbar.LENGTH_SHORT).show()
+                    binding.run {
+                        tvTitleBottomSheet.text = exercise.title
+                    }
                     true
                 }
                 position = LatLng(lat, lng)
