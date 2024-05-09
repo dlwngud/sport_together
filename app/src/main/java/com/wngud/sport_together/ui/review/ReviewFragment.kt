@@ -7,8 +7,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.wngud.sport_together.R
 import com.wngud.sport_together.databinding.FragmentReviewBinding
+import com.wngud.sport_together.ui.chatting.ChattingAdapter
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -30,9 +33,19 @@ class ReviewFragment : Fragment() {
             toolbarReview.setNavigationOnClickListener {
                 backPress()
             }
+
+            initChattingRecyclerView()
         }
 
         return binding.root
+    }
+
+    private fun initChattingRecyclerView() {
+        binding.rvReview.run {
+            val reviewAdapter = ReviewAdapter()
+            adapter = reviewAdapter
+            layoutManager = LinearLayoutManager(requireContext())
+        }
     }
 
     private fun backPress() {
