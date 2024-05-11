@@ -1,8 +1,10 @@
 package com.wngud.sport_together.di
 
 import com.wngud.sport_together.data.repository.ExerciseRepositoryImpl
+import com.wngud.sport_together.data.repository.ReviewRepositoryImpl
 import com.wngud.sport_together.data.repository.UserRepositoryImpl
 import com.wngud.sport_together.domain.repository.ExerciseRepository
+import com.wngud.sport_together.domain.repository.ReviewRepository
 import com.wngud.sport_together.domain.repository.UserRepository
 import dagger.Binds
 import dagger.Module
@@ -21,4 +23,8 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindExerciseRepository(exerciseRepositoryImpl: ExerciseRepositoryImpl): ExerciseRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindReviewRepository(reviewRepositoryImpl: ReviewRepositoryImpl): ReviewRepository
 }
