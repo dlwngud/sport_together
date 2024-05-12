@@ -85,7 +85,7 @@ class MypageFragment : Fragment() {
     private fun showProfile(user: User) {
         mypageViewModel.getUserProfile(user.profileImage){
             if (it.isSuccessful) {
-                Glide.with(this@MypageFragment).load(it.result)
+                Glide.with(requireView()).load(it.result)
                     .placeholder(R.drawable.app_icon).error(R.drawable.app_icon)
                     .into(binding.ivProfileMypage)
             }
