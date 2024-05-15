@@ -59,6 +59,13 @@ class UserDataSource {
                         e
                     )
                 }
+
+            val reviewRef = App.db.collection("reviews")
+            reviewRef.get().addOnSuccessListener {
+                for (doc in it) {
+                    doc.reference.update("nickname", user.nickname)
+                }
+            }
         }
     }
 
