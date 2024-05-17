@@ -20,20 +20,32 @@ class UserDataSource {
 
             if (snapshot != null && snapshot.exists()) {
                 val data = snapshot.data
+                val email = data?.get("email").toString()
+                val uid = data?.get("uid").toString()
                 val introduce = data?.get("introduce").toString()
                 val nickname = data?.get("nickname").toString()
                 val profileImage = data?.get("profileImage").toString()
                 val follower = data?.get("follower") as? List<String> ?: emptyList()
                 val following = data?.get("following") as? List<String> ?: emptyList()
-                Log.i("tag", "data "+follower)
-                trySend(User(introduce = introduce, nickname = nickname, profileImage = profileImage, follower = follower, following = following))
+                Log.i("tag", "data " + follower)
+                trySend(
+                    User(
+                        uid = uid,
+                        email = email,
+                        introduce = introduce,
+                        nickname = nickname,
+                        profileImage = profileImage,
+                        follower = follower,
+                        following = following
+                    )
+                )
             }
         }
-        awaitClose {  }
+        awaitClose { }
     }
 
     suspend fun saveUserInfo(user: User) {
-        withContext(Dispatchers.IO){
+        withContext(Dispatchers.IO) {
             App.db.collection("users")
                 .document(App.auth.currentUser!!.uid)
                 .set(user)
@@ -47,6 +59,13 @@ class UserDataSource {
                         e
                     )
                 }
+
+            val reviewRef = App.db.collection("reviews")
+            reviewRef.get().addOnSuccessListener {
+                for (doc in it) {
+                    doc.reference.update("nickname", user.nickname)
+                }
+            }
         }
     }
 

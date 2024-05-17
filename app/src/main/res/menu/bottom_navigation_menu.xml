@@ -16,7 +16,7 @@
         android:icon="@drawable/ic_review"
         android:title="게시글" />
     <item
-        android:id="@+id/nav_chatting"
+        android:id="@+id/nav_chatting_room"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:enabled="true"

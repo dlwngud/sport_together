@@ -14,7 +14,6 @@ class UserRepositoryImpl @Inject constructor(private val userDataSource: UserDat
     UserRepository {
     override suspend fun getUserInfo(uid: String): Flow<User> {
         val userInfo = userDataSource.getUserInfo(uid)
-        Log.i("tag", "repo "+userInfo.first().profileImage)
         return userInfo
     }
 

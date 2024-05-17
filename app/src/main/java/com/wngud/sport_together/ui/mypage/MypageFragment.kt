@@ -65,20 +65,6 @@ class MypageFragment : Fragment() {
                 }
             }
         }
-//        val docRef = App.db.collection("users").document(App.auth.currentUser!!.uid)
-//        docRef.addSnapshotListener { snapshot, e ->
-//            if (e != null) {
-//                return@addSnapshotListener
-//            }
-//            if (snapshot != null && snapshot.exists()) {
-//                Log.d("tag", "Current data: ${snapshot.data}")
-//                val data = snapshot.data
-//                val introduce = data?.get("introduce").toString()
-//                val nickname = data?.get("nickname").toString()
-//                val profileImage = data?.get("profileImage").toString()
-//                mypageViewModel.user.update { User(introduce = introduce, nickname = nickname, profileImage = profileImage) }
-//            }
-//        }
         observeUiEvent()
         return binding.root
     }
@@ -99,7 +85,7 @@ class MypageFragment : Fragment() {
     private fun showProfile(user: User) {
         mypageViewModel.getUserProfile(user.profileImage){
             if (it.isSuccessful) {
-                Glide.with(this@MypageFragment).load(it.result)
+                Glide.with(requireView()).load(it.result)
                     .placeholder(R.drawable.app_icon).error(R.drawable.app_icon)
                     .into(binding.ivProfileMypage)
             }
