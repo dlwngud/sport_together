@@ -1,8 +1,10 @@
 package com.wngud.sport_together.di
 
+import com.wngud.sport_together.data.repository.ChattingRepositoryImpl
 import com.wngud.sport_together.data.repository.ExerciseRepositoryImpl
 import com.wngud.sport_together.data.repository.ReviewRepositoryImpl
 import com.wngud.sport_together.data.repository.UserRepositoryImpl
+import com.wngud.sport_together.domain.repository.ChattingRepository
 import com.wngud.sport_together.domain.repository.ExerciseRepository
 import com.wngud.sport_together.domain.repository.ReviewRepository
 import com.wngud.sport_together.domain.repository.UserRepository
@@ -27,4 +29,8 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindReviewRepository(reviewRepositoryImpl: ReviewRepositoryImpl): ReviewRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindChattingRepository(chattingRepositoryImpl: ChattingRepositoryImpl): ChattingRepository
 }

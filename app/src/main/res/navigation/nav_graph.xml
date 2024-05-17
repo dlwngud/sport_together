@@ -11,10 +11,10 @@
         android:label="fragment_map"
         tools:layout="@layout/fragment_map" />
     <fragment
-        android:id="@+id/nav_chatting"
-        android:name="com.wngud.sport_together.ui.chatting.ChattingFragment"
+        android:id="@+id/nav_chatting_room"
+        android:name="com.wngud.sport_together.ui.chatting.ChattingRoomFragment"
         android:label="fragment_chatting"
-        tools:layout="@layout/fragment_chatting" />
+        tools:layout="@layout/fragment_chatting_room" />
     <fragment
         android:id="@+id/nav_mypage"
         android:name="com.wngud.sport_together.ui.mypage.MypageFragment"
@@ -50,4 +50,9 @@
         android:name="com.wngud.sport_together.ui.map.RecruitmentFragment"
         android:label="fragment_recruitment"
         tools:layout="@layout/fragment_recruitment" />
+    <fragment
+        android:id="@+id/nav_chatting"
+        android:name="com.wngud.sport_together.ui.chatting.ChattingFragment"
+        android:label="fragment_chatting"
+        tools:layout="@layout/fragment_chatting" />
 </navigation>
