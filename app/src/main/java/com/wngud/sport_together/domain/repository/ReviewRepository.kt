@@ -9,6 +9,4 @@ interface ReviewRepository {
     suspend fun saveReview(review: Review, uris: List<Uri>)
 
     suspend fun getAllReviews(): Flow<List<Review>>
-
-    suspend fun saveReviewImages(uris: List<Uri>)
 }

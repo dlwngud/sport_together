@@ -35,8 +35,4 @@ class ReviewRepositoryImpl @Inject constructor() : ReviewRepository {
             emit(reviews)
         }
     }
-
-    override suspend fun saveReviewImages(uris: List<Uri>) {
-
-    }
 }

@@ -36,7 +36,7 @@ class MainActivity : AppCompatActivity() {
     private fun setBottomNavigationVisibility(navController: NavController) {
         navController.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
-                R.id.nav_map, R.id.nav_review, R.id.nav_chatting, R.id.nav_mypage -> {
+                R.id.nav_map, R.id.nav_review, R.id.nav_chatting_room, R.id.nav_mypage -> {
                     binding.bottomNavigationMain.visibility = View.VISIBLE
                 }
 
