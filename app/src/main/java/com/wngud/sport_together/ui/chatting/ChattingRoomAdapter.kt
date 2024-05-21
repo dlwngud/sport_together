@@ -1,5 +1,6 @@
 package com.wngud.sport_together.ui.chatting
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -39,6 +40,7 @@ class ChattingRoomAdapter :
     }
 
     override fun onBindViewHolder(holder: ChattingRoomViewHolder, position: Int) {
+        Log.i("viewHolder", getItem(position).users.toString())
         holder.itemView.setOnClickListener {
             itemClickListener.onItemClick(position)
         }
@@ -48,11 +50,11 @@ class ChattingRoomAdapter :
     companion object {
         val diffUtil = object : DiffUtil.ItemCallback<ChattingRoom>() {
             override fun areItemsTheSame(oldItem: ChattingRoom, newItem: ChattingRoom): Boolean {
-                return oldItem == newItem
+                return oldItem.roomId == newItem.roomId
             }
 
             override fun areContentsTheSame(oldItem: ChattingRoom, newItem: ChattingRoom): Boolean {
-                return oldItem.roomId == newItem.roomId
+                return oldItem == newItem
             }
         }
     }

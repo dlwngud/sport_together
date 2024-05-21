@@ -10,7 +10,6 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.wngud.sport_together.App
 import com.wngud.sport_together.databinding.FragmentChattingBinding
@@ -18,6 +17,7 @@ import com.wngud.sport_together.domain.model.Chatting
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import okhttp3.internal.notifyAll
 
 @AndroidEntryPoint
 class ChattingFragment : Fragment() {
@@ -34,11 +34,17 @@ class ChattingFragment : Fragment() {
     ): View? {
         binding = FragmentChattingBinding.inflate(layoutInflater, container, false)
 
+        val roomId = arguments?.getString("roomId")
+        roomId?.let {
+            chattingViewModel.getChatting(it)
+        }
+
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                chattingViewModel.chattingList.collectLatest {
-                    chattingAdapter.submitList(it)
-                    Log.i("chatting", it.size.toString())
+                chattingViewModel.chattingList.collectLatest { chattings ->
+                    Log.i("chatting_frag", "chattings 사이즈 ${chattings.size}")
+                    chattingAdapter.submitList(chattings)
+//                    binding.rvChatting.smoothScrollToPosition(chattings.lastIndex)
                 }
             }
         }
@@ -62,7 +68,6 @@ class ChattingFragment : Fragment() {
         binding.rvChatting.run {
             adapter = chattingAdapter
             layoutManager = LinearLayoutManager(requireContext())
-            addItemDecoration(DividerItemDecoration(context, LinearLayoutManager.VERTICAL))
         }
     }
 }

@@ -41,27 +41,20 @@ class ChattingRepositoryImpl @Inject constructor() : ChattingRepository {
         }
     }
 
-    override suspend fun getChatting(roomId: String): Flow<Result<List<Chatting>>> = callbackFlow {
-        App.db.collection("ChattingRooms")
+    override suspend fun getChatting(roomId: String): Flow<List<Chatting>> = callbackFlow {
+        val subscription = App.db.collection("ChattingRooms")
             .document(roomId)
             .collection("Chattings")
             .orderBy("sentAt")
-            .addSnapshotListener { value, error ->
-                if (value != null) {
-                    val chattings = mutableListOf<Chatting>()
-                    value.documentChanges.forEach { doc ->
-                        if (doc.type == DocumentChange.Type.ADDED) {
-                            chattings.add(doc.document.toObject<Chatting>())
-                        }
-                    }
-                    trySend(Result.success(chattings))
-                } else {
-                    trySend(Result.failure(Error(error?.message)))
+            .addSnapshotListener { querySnapshot, error ->
+                if (error != null) return@addSnapshotListener
+                querySnapshot?.let {
+                    trySend(it.documents.map { doc ->
+                        doc.toObject(Chatting::class.java)!!.copy()
+                    }).isSuccess
                 }
             }
-        awaitClose {
-
-        }
+        awaitClose { subscription.remove() }
     }
 
     override suspend fun getAllChattingRoom(): List<ChattingRoom> {

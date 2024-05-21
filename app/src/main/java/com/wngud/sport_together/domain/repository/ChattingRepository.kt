@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 interface ChattingRepository {
     suspend fun sendChatting(chatting: Chatting, users: List<String>)
 
-    suspend fun getChatting(roomId: String): Flow<Result<List<Chatting>>>
+    suspend fun getChatting(roomId: String): Flow<List<Chatting>>
 
     suspend fun getAllChattingRoom(): List<ChattingRoom>
 

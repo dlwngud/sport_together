@@ -2,6 +2,7 @@ package com.wngud.sport_together.ui.chatting
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.wngud.sport_together.App
 import com.wngud.sport_together.domain.model.ChattingRoom
 import com.wngud.sport_together.domain.repository.ChattingRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,11 +21,11 @@ class ChattingRoomViewModel @Inject constructor(
     val roomList = _roomList.asStateFlow()
 
     init {
-        getAllChattingRoom()
+        getAllMyChattingRooms()
     }
 
-    private fun getAllChattingRoom() = viewModelScope.launch {
+    private fun getAllMyChattingRooms() = viewModelScope.launch {
         val chattingRooms = chattingRepository.getAllChattingRoom()
-        _roomList.update { chattingRooms }
+        _roomList.update { chattingRooms.filter { it.users.contains(App.auth.currentUser!!.uid) } }
     }
 }

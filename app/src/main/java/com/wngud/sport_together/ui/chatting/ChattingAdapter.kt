@@ -1,5 +1,6 @@
 package com.wngud.sport_together.ui.chatting
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -52,28 +53,28 @@ class ChattingAdapter : ListAdapter<Chatting, RecyclerView.ViewHolder>(diffUtil)
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         if (getItemViewType(position) == MY_CHAT) {
-            (holder as MyChattingViewHolder).bind(currentList[position])
+            Log.i("viewHolder1", getItem(position).content)
+            (holder as MyChattingViewHolder).bind(getItem(position))
         } else {
-            (holder as OtherChattingViewHolder).bind(currentList[position])
+            Log.i("viewHolder2", getItem(position).content)
+            (holder as OtherChattingViewHolder).bind(getItem(position))
         }
     }
 
     override fun getItemViewType(position: Int): Int {
-        return if (App.auth.currentUser!!.uid == currentList[position].senderId) {
-            MY_CHAT
-        } else {
-            OTHER_CHAT
-        }
+        return if (App.auth.currentUser!!.uid == getItem(position).senderId) MY_CHAT
+        else OTHER_CHAT
+
     }
 
     companion object {
         val diffUtil = object : DiffUtil.ItemCallback<Chatting>() {
             override fun areItemsTheSame(oldItem: Chatting, newItem: Chatting): Boolean {
-                return oldItem == newItem
+                return oldItem.content == newItem.content
             }
 
             override fun areContentsTheSame(oldItem: Chatting, newItem: Chatting): Boolean {
-                return oldItem.senderId == newItem.senderId
+                return oldItem == newItem
             }
         }
         private const val MY_CHAT = 1

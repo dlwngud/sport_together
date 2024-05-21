@@ -3,6 +3,7 @@ package com.wngud.sport_together.data.db.remote
 import android.net.Uri
 import android.util.Log
 import com.google.android.gms.tasks.Task
+import com.google.firebase.firestore.toObject
 import com.kakao.sdk.user.Constants
 import com.wngud.sport_together.App
 import com.wngud.sport_together.domain.model.User
