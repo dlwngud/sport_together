@@ -209,6 +209,15 @@ class NaverMapFragment : Fragment(), OnMapReadyCallback {
                     persistentBottomSheet.state = BottomSheetBehavior.STATE_COLLAPSED
                     binding.run {
                         tvTitleBottomSheet.text = exercise.title
+                        bottomSheetMap.setOnClickListener {
+                            val builder = AlertDialog.Builder(requireContext())
+                            builder.setTitle("-님과 채팅하시겠습니까?")
+                                .setPositiveButton("네") { dialog, which ->
+                                    findNavController().navigate(R.id.nav_chatting)
+                                }.setNegativeButton("아니오") { dialog, which ->
+
+                            }.create().show()
+                        }
                     }
                     true
                 }
