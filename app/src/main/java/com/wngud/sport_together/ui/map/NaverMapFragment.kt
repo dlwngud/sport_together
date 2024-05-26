@@ -17,6 +17,7 @@ import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager.HORIZONTAL
+import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.snackbar.Snackbar
 import com.kakao.sdk.user.Constants.TAG
@@ -32,6 +33,7 @@ import com.naver.maps.map.util.FusedLocationSource
 import com.wngud.sport_together.R
 import com.wngud.sport_together.databinding.FragmentMapBinding
 import com.wngud.sport_together.domain.model.Exercise
+import com.wngud.sport_together.ui.mypage.MypageViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -42,6 +44,7 @@ class NaverMapFragment : Fragment(), OnMapReadyCallback {
 
     private lateinit var binding: FragmentMapBinding
     private val mapViewModel: MapViewModel by viewModels()
+    private val mypageViewModel: MypageViewModel by viewModels()
 
     private lateinit var locationSource: FusedLocationSource
     private lateinit var naverMap: NaverMap
@@ -209,9 +212,17 @@ class NaverMapFragment : Fragment(), OnMapReadyCallback {
                     persistentBottomSheet.state = BottomSheetBehavior.STATE_COLLAPSED
                     binding.run {
                         tvTitleBottomSheet.text = exercise.title
+                        tvNicknameBottomSheet.text = exercise.nickname
+                        mypageViewModel.getUserProfile(exercise.profileImage){
+                            if (it.isSuccessful) {
+                                Glide.with(requireView()).load(it.result)
+                                    .placeholder(R.drawable.app_icon).error(R.drawable.app_icon)
+                                    .into(binding.ivBottomSheet)
+                            }
+                        }
                         bottomSheetMap.setOnClickListener {
                             val builder = AlertDialog.Builder(requireContext())
-                            builder.setTitle("-님과 채팅하시겠습니까?")
+                            builder.setTitle("${exercise.nickname}님과 채팅하시겠습니까?")
                                 .setPositiveButton("네") { dialog, which ->
                                     findNavController().navigate(R.id.nav_chatting)
                                 }.setNegativeButton("아니오") { dialog, which ->
