@@ -28,7 +28,7 @@ class ChattingRoomFragment : Fragment() {
     private val chattingRoomViewModel: ChattingRoomViewModel by viewModels()
     private val chattingViewModel: ChattingViewModel by viewModels()
     private val chattingRoomAdapter by lazy {
-        ChattingRoomAdapter()
+        ChattingRoomAdapter(requireContext())
     }
 
     override fun onCreateView(
