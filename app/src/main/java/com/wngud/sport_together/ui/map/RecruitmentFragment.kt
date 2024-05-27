@@ -25,7 +25,9 @@ import com.wngud.sport_together.App
 import com.wngud.sport_together.R
 import com.wngud.sport_together.databinding.FragmentRecruitmentBinding
 import com.wngud.sport_together.domain.model.Exercise
+import com.wngud.sport_together.ui.mypage.MypageViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.lang.reflect.Array
 import java.util.Locale
@@ -34,6 +36,7 @@ import java.util.Locale
 class RecruitmentFragment : Fragment() {
 
     private val mapViewModel: MapViewModel by viewModels()
+    private val mypageViewModel: MypageViewModel by viewModels()
     private lateinit var binding: FragmentRecruitmentBinding
 
     private val typeList = arrayOf(
@@ -77,9 +80,14 @@ class RecruitmentFragment : Fragment() {
                         uid = App.auth.currentUser!!.uid,
                         type = binding.autoCompleteTvRecruitment.text.toString(),
                         location = "$lat $lng",
-                        title = binding.etRecruitmentTitle.text.toString()
+                        title = binding.etRecruitmentTitle.text.toString(),
+                        nickname = mypageViewModel.user.value.nickname,
+                        profileImage = mypageViewModel.user.value.profileImage
                     )
                     saveExercise(exercise)
+                }
+                mypageViewModel.user.collectLatest {
+                    Log.i("recruitment", it.nickname)
                 }
             }
         }

@@ -21,23 +21,21 @@ class ChattingViewModel @Inject constructor(
     private val _chattingList = MutableStateFlow<List<Chatting>>(emptyList())
     val chattingList = _chattingList.asStateFlow()
 
+//    private val _roomId = MutableStateFlow<String>("")
+//    val roomId = _roomId.asStateFlow()
+//
+//    fun selectRoom(roomId: String){
+//        _roomId.update { roomId }
+//    }
+
     fun sendChatting(chatting: Chatting, users: List<String>) = viewModelScope.launch {
         chattingRepository.sendChatting(chatting, users)
     }
 
     fun getChatting(roomId: String) = viewModelScope.launch {
-        chattingRepository.getChatting(roomId).collectLatest { result ->
-            result
-                .onSuccess { chattings ->
-                    _chattingList.update { chattings }.apply {
-                        for (i in chattings) {
-                            Log.i("chatting", i.content)
-                        }
-                    }
-                }
-                .onFailure {
-                    Log.i("error", it.message.toString())
-                }
+        chattingRepository.getChatting(roomId).collect { chattings ->
+            Log.i("viewmodel", "채팅 사이즈 ${chattings.size}")
+            _chattingList.update { chattings }
         }
     }
 }

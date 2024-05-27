@@ -5,5 +5,7 @@ data class Exercise(
     val uid: String = "",
     val type: String = "",
     val location: String = "",
-    val title: String = ""
+    val title: String = "",
+    val nickname: String = "",
+    val profileImage: String = ""
 )

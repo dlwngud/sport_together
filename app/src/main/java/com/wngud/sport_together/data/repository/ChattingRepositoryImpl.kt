@@ -1,24 +1,33 @@
 package com.wngud.sport_together.data.repository
 
 import android.util.Log
-import com.google.firebase.firestore.DocumentChange
-import com.google.firebase.firestore.toObject
 import com.google.firebase.firestore.toObjects
 import com.wngud.sport_together.App
+import com.wngud.sport_together.data.db.remote.UserDataSource
 import com.wngud.sport_together.domain.model.Chatting
 import com.wngud.sport_together.domain.model.ChattingRoom
 import com.wngud.sport_together.domain.repository.ChattingRepository
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
-class ChattingRepositoryImpl @Inject constructor() : ChattingRepository {
+class ChattingRepositoryImpl @Inject constructor(
+    private val userDataSource: UserDataSource
+) : ChattingRepository {
     override suspend fun sendChatting(chatting: Chatting, users: List<String>) {
         val chattingRoomRef = App.db.collection("ChattingRooms")
         var roomId = getRoomIdOrNull(users)
-        val chattingRoom = ChattingRoom(users = users, createdAt = System.currentTimeMillis())
+        val user = userDataSource.getUserInfo(users[1]).firstOrNull()!!
+        val chattingRoom =
+            ChattingRoom(
+                users = users,
+                createdAt = System.currentTimeMillis(),
+                nickname = user.nickname,
+                profileImage = user.profileImage
+            )
         if (roomId == null) {
             roomId = chattingRoomRef.document().id
             chattingRoomRef.document(roomId).set(chattingRoom.copy(roomId = roomId))
@@ -41,27 +50,20 @@ class ChattingRepositoryImpl @Inject constructor() : ChattingRepository {
         }
     }
 
-    override suspend fun getChatting(roomId: String): Flow<Result<List<Chatting>>> = callbackFlow {
-        App.db.collection("ChattingRooms")
+    override suspend fun getChatting(roomId: String): Flow<List<Chatting>> = callbackFlow {
+        val subscription = App.db.collection("ChattingRooms")
             .document(roomId)
             .collection("Chattings")
             .orderBy("sentAt")
-            .addSnapshotListener { value, error ->
-                if (value != null) {
-                    val chattings = mutableListOf<Chatting>()
-                    value.documentChanges.forEach { doc ->
-                        if (doc.type == DocumentChange.Type.ADDED) {
-                            chattings.add(doc.document.toObject<Chatting>())
-                        }
-                    }
-                    trySend(Result.success(chattings))
-                } else {
-                    trySend(Result.failure(Error(error?.message)))
+            .addSnapshotListener { querySnapshot, error ->
+                if (error != null) return@addSnapshotListener
+                querySnapshot?.let {
+                    trySend(it.documents.map { doc ->
+                        doc.toObject(Chatting::class.java)!!.copy()
+                    }).isSuccess
                 }
             }
-        awaitClose {
-
-        }
+        awaitClose { subscription.remove() }
     }
 
     override suspend fun getAllChattingRoom(): List<ChattingRoom> {

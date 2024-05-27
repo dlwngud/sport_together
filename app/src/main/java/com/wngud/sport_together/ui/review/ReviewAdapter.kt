@@ -50,11 +50,11 @@ class ReviewAdapter @Inject constructor(
     companion object {
         val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Review>() {
             override fun areItemsTheSame(oldItem: Review, newItem: Review): Boolean {
-                return oldItem == newItem
+                return oldItem.createTime == newItem.createTime
             }
 
             override fun areContentsTheSame(oldItem: Review, newItem: Review): Boolean {
-                return oldItem.reviewId == newItem.reviewId
+                return oldItem == newItem
             }
         }
     }

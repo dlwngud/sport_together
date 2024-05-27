@@ -6,5 +6,5 @@ data class Chatting(
     val senderId: String = "",
     val content: String = "",
     val sentAt: Long = 0,
-    val isRead: Boolean = false
+    val read: Boolean = false
 )
