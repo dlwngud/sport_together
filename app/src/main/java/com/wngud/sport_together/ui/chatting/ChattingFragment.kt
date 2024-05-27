@@ -25,7 +25,7 @@ class ChattingFragment : Fragment() {
     private lateinit var binding: FragmentChattingBinding
     private val chattingViewModel: ChattingViewModel by viewModels()
     private val chattingAdapter by lazy {
-        ChattingAdapter()
+        ChattingAdapter(requireContext())
     }
 
     override fun onCreateView(
@@ -35,16 +35,19 @@ class ChattingFragment : Fragment() {
         binding = FragmentChattingBinding.inflate(layoutInflater, container, false)
 
         val roomId = arguments?.getString("roomId")
+        val counterUserNickname = arguments?.getString("counterUserNickname")
+        val counterUserProfileImage = arguments?.getString("counterUserProfileImage")
         roomId?.let {
             chattingViewModel.getChatting(it)
         }
+        chattingAdapter.setCounterUserInfo(counterUserNickname, counterUserProfileImage)
 
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 chattingViewModel.chattingList.collectLatest { chattings ->
                     Log.i("chatting_frag", "chattings 사이즈 ${chattings.size}")
                     chattingAdapter.submitList(chattings)
-//                    binding.rvChatting.smoothScrollToPosition(chattings.lastIndex)
+                    if(chattings.isNotEmpty()) binding.rvChatting.smoothScrollToPosition(chattings.lastIndex)
                 }
             }
         }
@@ -55,7 +58,8 @@ class ChattingFragment : Fragment() {
                     senderId = App.auth.currentUser!!.uid,
                     content = etChatting.text.toString()
                 )
-                chattingViewModel.sendChatting(chatting, listOf("user1", "user3"))
+                chattingViewModel.sendChatting(chatting, listOf(App.auth.currentUser!!.uid, "user4"))
+                etChatting.setText("")
             }
         }
 

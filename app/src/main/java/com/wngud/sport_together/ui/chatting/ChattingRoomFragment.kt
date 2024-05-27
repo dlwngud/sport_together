@@ -66,10 +66,14 @@ class ChattingRoomFragment : Fragment() {
                 ChattingRoomAdapter.onItemClickListener {
                 override fun onItemClick(position: Int) {
                     val roomId = chattingRoomViewModel.roomList.value[position].roomId
+                    val counterUserNickname = chattingRoomViewModel.roomList.value[position].nickname
+                    val counterUserProfileImage = chattingRoomViewModel.roomList.value[position].profileImage
                     Log.i("room", roomId)
 //                    chattingViewModel.getChatting(roomId)
                     val bundle = Bundle()
                     bundle.putString("roomId", roomId)
+                    bundle.putString("counterUserNickname", counterUserNickname)
+                    bundle.putString("counterUserProfileImage", counterUserProfileImage)
                     findNavController().navigate(R.id.nav_chatting, bundle)
                 }
             })
