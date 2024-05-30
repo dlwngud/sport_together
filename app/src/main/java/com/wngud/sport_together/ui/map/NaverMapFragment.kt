@@ -23,6 +23,8 @@ import com.google.android.material.snackbar.Snackbar
 import com.kakao.sdk.user.Constants.TAG
 import com.kakao.sdk.user.UserApiClient
 import com.naver.maps.geometry.LatLng
+import com.naver.maps.map.CameraAnimation
+import com.naver.maps.map.CameraUpdate
 import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.MapFragment
 import com.naver.maps.map.NaverMap
@@ -213,7 +215,7 @@ class NaverMapFragment : Fragment(), OnMapReadyCallback {
                     binding.run {
                         tvTitleBottomSheet.text = exercise.title
                         tvNicknameBottomSheet.text = exercise.nickname
-                        mypageViewModel.getUserProfile(exercise.profileImage){
+                        mypageViewModel.getUserProfile(exercise.profileImage) {
                             if (it.isSuccessful) {
                                 Glide.with(requireView()).load(it.result)
                                     .placeholder(R.drawable.app_icon).error(R.drawable.app_icon)
@@ -227,26 +229,26 @@ class NaverMapFragment : Fragment(), OnMapReadyCallback {
                                     findNavController().navigate(R.id.nav_chatting)
                                 }.setNegativeButton("아니오") { dialog, which ->
 
-                            }.create().show()
+                                }.create().show()
                         }
                     }
                     true
                 }
                 position = LatLng(lat, lng)
                 icon = when (exercise.type) {
-                    "자전거" -> OverlayImage.fromResource(R.drawable.ic_bicycle)
-                    "등산" -> OverlayImage.fromResource(R.drawable.ic_hiking)
-                    "탁구" -> OverlayImage.fromResource(R.drawable.ic_table_tennis)
-                    "배드민턴" -> OverlayImage.fromResource(R.drawable.ic_badminton)
-                    "볼링" -> OverlayImage.fromResource(R.drawable.ic_bowling)
-                    "테니스" -> OverlayImage.fromResource(R.drawable.ic_tennis)
-                    "런닝" -> OverlayImage.fromResource(R.drawable.ic_running)
-                    "헬스" -> OverlayImage.fromResource(R.drawable.ic_gym)
-                    else -> OverlayImage.fromResource(R.drawable.ic_etc)
+                    "자전거" -> OverlayImage.fromResource(R.drawable.ic_pin_bicycle)
+                    "등산" -> OverlayImage.fromResource(R.drawable.ic_pin_hiking)
+                    "탁구" -> OverlayImage.fromResource(R.drawable.ic_pin_table_tennis)
+                    "배드민턴" -> OverlayImage.fromResource(R.drawable.ic_pin_badminton)
+                    "볼링" -> OverlayImage.fromResource(R.drawable.ic_pin_bowling)
+                    "테니스" -> OverlayImage.fromResource(R.drawable.ic_pin_tennis)
+                    "런닝" -> OverlayImage.fromResource(R.drawable.ic_pin_running)
+                    "헬스" -> OverlayImage.fromResource(R.drawable.ic_pin_gym)
+                    else -> OverlayImage.fromResource(R.drawable.ic_pin_etc)
                 }
                 captionText = exercise.type
-                width = 80
-                height = 80
+                width = 100
+                height = 100
                 map = naverMap
             }
         }
