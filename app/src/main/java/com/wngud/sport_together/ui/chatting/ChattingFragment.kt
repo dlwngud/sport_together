@@ -37,6 +37,7 @@ class ChattingFragment : Fragment() {
         val roomId = arguments?.getString("roomId")
         val counterUserNickname = arguments?.getString("counterUserNickname")
         val counterUserProfileImage = arguments?.getString("counterUserProfileImage")
+        val counterUid = arguments?.getString("counterUid")
         roomId?.let {
             chattingViewModel.getChatting(it)
         }
@@ -58,7 +59,7 @@ class ChattingFragment : Fragment() {
                     senderId = App.auth.currentUser!!.uid,
                     content = etChatting.text.toString()
                 )
-                chattingViewModel.sendChatting(chatting, listOf(App.auth.currentUser!!.uid, "user4"))
+                chattingViewModel.sendChatting(chatting, listOf(App.auth.currentUser!!.uid, counterUid!!))
                 etChatting.setText("")
             }
         }

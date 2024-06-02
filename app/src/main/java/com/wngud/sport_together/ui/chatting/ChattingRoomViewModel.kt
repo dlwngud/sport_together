@@ -5,16 +5,20 @@ import androidx.lifecycle.viewModelScope
 import com.wngud.sport_together.App
 import com.wngud.sport_together.domain.model.ChattingRoom
 import com.wngud.sport_together.domain.repository.ChattingRepository
+import com.wngud.sport_together.domain.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class ChattingRoomViewModel @Inject constructor(
-    private val chattingRepository: ChattingRepository
+    private val chattingRepository: ChattingRepository,
+    private val userRepository: UserRepository
 ) : ViewModel() {
 
     private val _roomList = MutableStateFlow<List<ChattingRoom>>(emptyList())
@@ -26,6 +30,7 @@ class ChattingRoomViewModel @Inject constructor(
 
     private fun getAllMyChattingRooms() = viewModelScope.launch {
         val chattingRooms = chattingRepository.getAllChattingRoom()
-        _roomList.update { chattingRooms.filter { it.users.contains(App.auth.currentUser!!.uid) } }
+        val mUser = userRepository.getUserInfo(App.auth.currentUser!!.uid)
+        _roomList.update { chattingRooms.filter { it.users.contains(mUser.first()) } }
     }
 }

@@ -15,6 +15,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.navArgument
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.wngud.sport_together.App
 import com.wngud.sport_together.R
 import com.wngud.sport_together.databinding.FragmentChattingRoomBinding
 import dagger.hilt.android.AndroidEntryPoint
@@ -65,15 +66,17 @@ class ChattingRoomFragment : Fragment() {
             chattingRoomAdapter.setItemClickListener(object :
                 ChattingRoomAdapter.onItemClickListener {
                 override fun onItemClick(position: Int) {
+                    val bundle = Bundle()
                     val roomId = chattingRoomViewModel.roomList.value[position].roomId
-                    val counterUserNickname = chattingRoomViewModel.roomList.value[position].nickname
-                    val counterUserProfileImage = chattingRoomViewModel.roomList.value[position].profileImage
+                    chattingRoomViewModel.roomList.value[position].users.find { it.uid != App.auth.currentUser!!.uid }
+                        .apply {
+                            bundle.putString("counterUserProfileImage", this!!.profileImage)
+                            bundle.putString("counterUserNickname", this.nickname)
+                            bundle.putString("counterUid", this.uid)
+                        }
                     Log.i("room", roomId)
 //                    chattingViewModel.getChatting(roomId)
-                    val bundle = Bundle()
                     bundle.putString("roomId", roomId)
-                    bundle.putString("counterUserNickname", counterUserNickname)
-                    bundle.putString("counterUserProfileImage", counterUserProfileImage)
                     findNavController().navigate(R.id.nav_chatting, bundle)
                 }
             })
