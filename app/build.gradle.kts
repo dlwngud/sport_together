@@ -97,4 +97,6 @@ dependencies {
 
     // lottie
     implementation("com.airbnb.android:lottie:5.0.2")
+
+    implementation("androidx.viewpager2:viewpager2:1.1.0")
 }
