@@ -33,8 +33,9 @@ class ChattingRoomAdapter @Inject constructor(
     inner class ChattingRoomViewHolder(private val binding: ItemChatBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(chattingRoom: ChattingRoom) {
+            val counterUser = chattingRoom.users.find { it.uid != App.auth.currentUser!!.uid }
             binding.run {
-                App.storage.reference.child(chattingRoom.profileImage).downloadUrl.addOnSuccessListener {
+                App.storage.reference.child(counterUser!!.profileImage).downloadUrl.addOnSuccessListener {
                     Glide.with(context)
                         .load(it)
                         .placeholder(R.drawable.app_icon)
@@ -45,7 +46,7 @@ class ChattingRoomAdapter @Inject constructor(
                 tvCountChat.visibility =
                     if (chattingRoom.unreadCount == 0) View.INVISIBLE else View.VISIBLE
                 tvContentChat.text = chattingRoom.lastChat
-                tvNicknameChat.text = chattingRoom.nickname
+                tvNicknameChat.text = counterUser.nickname
             }
         }
     }

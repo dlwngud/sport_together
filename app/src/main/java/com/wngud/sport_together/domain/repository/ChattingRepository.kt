@@ -2,6 +2,7 @@ package com.wngud.sport_together.domain.repository
 
 import com.wngud.sport_together.domain.model.Chatting
 import com.wngud.sport_together.domain.model.ChattingRoom
+import com.wngud.sport_together.domain.model.User
 import kotlinx.coroutines.flow.Flow
 
 interface ChattingRepository {
@@ -11,5 +12,5 @@ interface ChattingRepository {
 
     suspend fun getAllChattingRoom(): List<ChattingRoom>
 
-    suspend fun getRoomIdOrNull(users: List<String>): String?
+    suspend fun getRoomIdOrNull(users: List<User>): String?
 }

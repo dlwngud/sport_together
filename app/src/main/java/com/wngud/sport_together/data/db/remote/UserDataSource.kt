@@ -62,7 +62,7 @@ class UserDataSource {
                 }
 
             val reviewRef = App.db.collection("reviews")
-            reviewRef.get().addOnSuccessListener {
+            reviewRef.whereEqualTo("uid", App.auth.currentUser!!.uid).get().addOnSuccessListener {
                 for (doc in it) {
                     doc.reference.update("nickname", user.nickname)
                 }

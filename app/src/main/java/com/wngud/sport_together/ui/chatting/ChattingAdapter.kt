@@ -1,17 +1,26 @@
 package com.wngud.sport_together.ui.chatting
 
+import android.content.Context
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.wngud.sport_together.App
+import com.wngud.sport_together.R
 import com.wngud.sport_together.databinding.ItemCounterChattingBinding
 import com.wngud.sport_together.databinding.ItemMyChattingBinding
 import com.wngud.sport_together.domain.model.Chatting
+import javax.inject.Inject
 
-class ChattingAdapter : ListAdapter<Chatting, RecyclerView.ViewHolder>(diffUtil) {
+class ChattingAdapter @Inject constructor(
+    private val context: Context
+) : ListAdapter<Chatting, RecyclerView.ViewHolder>(diffUtil) {
+
+    private var counterUserNickname: String? = null
+    private var counterUserProfileImage: String? = null
 
     inner class MyChattingViewHolder(private val binding: ItemMyChattingBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -26,7 +35,18 @@ class ChattingAdapter : ListAdapter<Chatting, RecyclerView.ViewHolder>(diffUtil)
         RecyclerView.ViewHolder(binding.root) {
         fun bind(chatting: Chatting) {
             binding.run {
+                counterUserProfileImage?.let { profileImage ->
+                    App.storage.reference.child(profileImage).downloadUrl.addOnSuccessListener {
+                        Glide.with(context)
+                            .load(it)
+                            .placeholder(R.drawable.app_icon)
+                            .error(R.drawable.app_icon)
+                            .centerCrop()
+                            .into(binding.ivProfileCounterChatting)
+                    }
+                }
                 tvContentCounterChatting.text = chatting.content
+                tvNicknameCounterChatting.text = counterUserNickname
             }
         }
     }
@@ -64,7 +84,11 @@ class ChattingAdapter : ListAdapter<Chatting, RecyclerView.ViewHolder>(diffUtil)
     override fun getItemViewType(position: Int): Int {
         return if (App.auth.currentUser!!.uid == getItem(position).senderId) MY_CHAT
         else OTHER_CHAT
+    }
 
+    fun setCounterUserInfo(counterUserNickname: String?, counterUserProfileImage: String?) {
+        this.counterUserNickname = counterUserNickname
+        this.counterUserProfileImage = counterUserProfileImage
     }
 
     companion object {

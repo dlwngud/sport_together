@@ -6,6 +6,7 @@ import com.wngud.sport_together.App
 import com.wngud.sport_together.data.db.remote.UserDataSource
 import com.wngud.sport_together.domain.model.Chatting
 import com.wngud.sport_together.domain.model.ChattingRoom
+import com.wngud.sport_together.domain.model.User
 import com.wngud.sport_together.domain.repository.ChattingRepository
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -19,14 +20,15 @@ class ChattingRepositoryImpl @Inject constructor(
 ) : ChattingRepository {
     override suspend fun sendChatting(chatting: Chatting, users: List<String>) {
         val chattingRoomRef = App.db.collection("ChattingRooms")
-        var roomId = getRoomIdOrNull(users)
-        val user = userDataSource.getUserInfo(users[1]).firstOrNull()!!
+        val counterUId = users.find { it != App.auth.currentUser!!.uid }
+        val myUId = users.find { it == App.auth.currentUser!!.uid }
+        val mUser = userDataSource.getUserInfo(myUId!!).firstOrNull()!!
+        val counterUser = userDataSource.getUserInfo(counterUId!!).firstOrNull()!!
+        var roomId = getRoomIdOrNull(listOf(mUser, counterUser))
         val chattingRoom =
             ChattingRoom(
-                users = users,
-                createdAt = System.currentTimeMillis(),
-                nickname = user.nickname,
-                profileImage = user.profileImage
+                users = listOf(mUser, counterUser),
+                createdAt = System.currentTimeMillis()
             )
         if (roomId == null) {
             roomId = chattingRoomRef.document().id
@@ -71,7 +73,7 @@ class ChattingRepositoryImpl @Inject constructor(
         return querySnapshot.toObjects<ChattingRoom>()
     }
 
-    override suspend fun getRoomIdOrNull(users: List<String>): String? {
+    override suspend fun getRoomIdOrNull(users: List<User>): String? {
         val roomList = getAllChattingRoom()
         var roomId: String? = null
         for (room in roomList) {
