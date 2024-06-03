@@ -43,6 +43,10 @@ class ChattingFragment : Fragment() {
         }
         chattingAdapter.setCounterUserInfo(counterUserNickname, counterUserProfileImage)
 
+        binding.run {
+            toolbarChatting.title = counterUserNickname
+        }
+
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 chattingViewModel.chattingList.collectLatest { chattings ->
