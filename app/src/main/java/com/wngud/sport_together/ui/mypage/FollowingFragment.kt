@@ -39,7 +39,7 @@ class FollowingFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 mypageViewModel.user.collectLatest {
-//                    followingAdapter.submitList(it.following)
+                    followingAdapter.submitList(it.following)
                 }
             }
         }
@@ -49,9 +49,9 @@ class FollowingFragment : Fragment() {
 
     private fun setRecyclerView() {
         binding.rvFollowing.run {
-//            adapter = followingAdapter
-//            layoutManager = LinearLayoutManager(requireContext())
-//            addItemDecoration(DividerItemDecoration(context, LinearLayoutManager.VERTICAL))
+            adapter = followingAdapter
+            layoutManager = LinearLayoutManager(requireContext())
+            addItemDecoration(DividerItemDecoration(context, LinearLayoutManager.VERTICAL))
         }
     }
 }

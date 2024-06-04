@@ -10,8 +10,6 @@ import com.wngud.sport_together.domain.model.User
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 
 class UserDataSource {
@@ -78,41 +76,5 @@ class UserDataSource {
 
     suspend fun editUserProfile(fileName: String, uri: Uri) {
         val uploadTask = App.storage.reference.child("images/users/${fileName}.jpg").putFile(uri)
-    }
-
-    suspend fun follow(uid: String) {
-        val followUser = getUserInfo(uid).first()
-        val user = getUserInfo(App.auth.currentUser!!.uid).first()
-        val followerList = user.follower.toMutableList()
-        followerList.add(followUser.uid)
-        App.db.collection("users")
-            .document(App.auth.currentUser!!.uid)
-            .update("follower", followerList)
-            .addOnSuccessListener {
-                Log.d(Constants.TAG, "DocumentSnapshot successfully written!")
-            }
-            .addOnFailureListener { e ->
-                Log.w(
-                    Constants.TAG,
-                    "Error writing document",
-                    e
-                )
-            }
-
-        val followingList = followUser.following.toMutableList()
-        followingList.add(user.uid)
-        App.db.collection("users")
-            .document(followUser.uid)
-            .update("following", followingList)
-            .addOnSuccessListener {
-                Log.d(Constants.TAG, "DocumentSnapshot successfully written!")
-            }
-            .addOnFailureListener { e ->
-                Log.w(
-                    Constants.TAG,
-                    "Error writing document",
-                    e
-                )
-            }
     }
 }

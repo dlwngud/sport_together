@@ -2,7 +2,6 @@ package com.wngud.sport_together.ui.review
 
 import android.content.Context
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -17,16 +16,6 @@ import javax.inject.Inject
 class ReviewAdapter @Inject constructor(
     private val context: Context
 ) : ListAdapter<Review, ReviewAdapter.ReviewViewHolder>(DIFF_CALLBACK) {
-
-    interface onItemClickListener {
-        fun onItemClick(position: Int)
-    }
-
-    private lateinit var itemClickListener: onItemClickListener
-
-    fun setItemClickListener(itemClickListener: onItemClickListener) {
-        this.itemClickListener = itemClickListener
-    }
 
     inner class ReviewViewHolder(private val binding: ItemReviewBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -44,12 +33,6 @@ class ReviewAdapter @Inject constructor(
                 val imageAdapter = ImageAdapter(review, context)
                 adapter = imageAdapter
                 layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-            }
-            binding.btnFollowItemReview.run {
-                visibility = if(review.uid == App.auth.currentUser!!.uid) View.INVISIBLE else View.VISIBLE
-                setOnClickListener {
-                    itemClickListener.onItemClick(position)
-                }
             }
         }
     }

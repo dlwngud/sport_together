@@ -18,10 +18,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.wngud.sport_together.App
 import com.wngud.sport_together.R
 import com.wngud.sport_together.databinding.FragmentChattingRoomBinding
-import com.wngud.sport_together.ui.mypage.MypageViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -30,7 +28,6 @@ class ChattingRoomFragment : Fragment() {
     private lateinit var binding: FragmentChattingRoomBinding
     private val chattingRoomViewModel: ChattingRoomViewModel by viewModels()
     private val chattingViewModel: ChattingViewModel by viewModels()
-    private val mypageViewModel: MypageViewModel by viewModels()
     private val chattingRoomAdapter by lazy {
         ChattingRoomAdapter(requireContext())
     }
@@ -70,19 +67,16 @@ class ChattingRoomFragment : Fragment() {
                 ChattingRoomAdapter.onItemClickListener {
                 override fun onItemClick(position: Int) {
                     val bundle = Bundle()
-                    val counterUid = chattingRoomViewModel.roomList.value[position].users.find { it != App.auth.currentUser!!.uid }!!
-                    lifecycleScope.launch {
-                        val counterUser = mypageViewModel.getUserById(counterUid).first()
-                        bundle.putString("counterUserNickname", counterUser.profileImage)
-                        bundle.putString("counterUserProfileImage", counterUser.profileImage)
-                    }
-
                     val roomId = chattingRoomViewModel.roomList.value[position].roomId
+                    chattingRoomViewModel.roomList.value[position].users.find { it.uid != App.auth.currentUser!!.uid }
+                        .apply {
+                            bundle.putString("counterUserProfileImage", this!!.profileImage)
+                            bundle.putString("counterUserNickname", this.nickname)
+                            bundle.putString("counterUid", this.uid)
+                        }
                     Log.i("room", roomId)
 //                    chattingViewModel.getChatting(roomId)
                     bundle.putString("roomId", roomId)
-
-                    bundle.putString("counterUid", counterUid)
                     findNavController().navigate(R.id.nav_chatting, bundle)
                 }
             })
