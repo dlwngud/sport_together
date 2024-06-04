@@ -13,6 +13,8 @@ import com.wngud.sport_together.App
 import com.wngud.sport_together.R
 import com.wngud.sport_together.databinding.ItemChatBinding
 import com.wngud.sport_together.domain.model.ChattingRoom
+import com.wngud.sport_together.domain.repository.UserRepository
+import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 
 class ChattingRoomAdapter @Inject constructor(
@@ -33,20 +35,20 @@ class ChattingRoomAdapter @Inject constructor(
     inner class ChattingRoomViewHolder(private val binding: ItemChatBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(chattingRoom: ChattingRoom) {
-            val counterUser = chattingRoom.users.find { it.uid != App.auth.currentUser!!.uid }
+            val counterUid = chattingRoom.users.find { it != App.auth.currentUser!!.uid }
             binding.run {
-                App.storage.reference.child(counterUser!!.profileImage).downloadUrl.addOnSuccessListener {
-                    Glide.with(context)
-                        .load(it)
-                        .placeholder(R.drawable.app_icon)
-                        .error(R.drawable.app_icon)
-                        .centerCrop()
-                        .into(binding.ivProfileChat)
-                }
+//                App.storage.reference.child(counterUser!!.profileImage).downloadUrl.addOnSuccessListener {
+//                    Glide.with(context)
+//                        .load(it)
+//                        .placeholder(R.drawable.app_icon)
+//                        .error(R.drawable.app_icon)
+//                        .centerCrop()
+//                        .into(binding.ivProfileChat)
+//                }
                 tvCountChat.visibility =
                     if (chattingRoom.unreadCount == 0) View.INVISIBLE else View.VISIBLE
                 tvContentChat.text = chattingRoom.lastChat
-                tvNicknameChat.text = counterUser.nickname
+//                tvNicknameChat.text = counterUser.nickname
             }
         }
     }

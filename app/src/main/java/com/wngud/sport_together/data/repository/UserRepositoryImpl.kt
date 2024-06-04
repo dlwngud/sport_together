@@ -28,4 +28,8 @@ class UserRepositoryImpl @Inject constructor(private val userDataSource: UserDat
     override suspend fun editUserProfile(fileName: String, uri: Uri) {
         userDataSource.editUserProfile(fileName, uri)
     }
+
+    override suspend fun follow(uid: String) {
+        userDataSource.follow(uid)
+    }
 }

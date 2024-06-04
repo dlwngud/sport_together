@@ -13,4 +13,5 @@ interface UserRepository {
     suspend fun getUserProfile(fileName: String): Task<Uri>
 
     suspend fun editUserProfile(fileName: String, uri: Uri)
+    suspend fun follow(uid: String)
 }

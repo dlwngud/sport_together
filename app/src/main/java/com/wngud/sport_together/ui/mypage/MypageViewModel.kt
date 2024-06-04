@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -24,8 +25,9 @@ sealed class MypageEvent {
 }
 
 @HiltViewModel
-class MypageViewModel @Inject constructor(private val userRepository: UserRepository) :
-    ViewModel() {
+class MypageViewModel @Inject constructor(
+    private val userRepository: UserRepository
+) : ViewModel() {
     private val _user = MutableStateFlow(User())
     val user = _user.asStateFlow()
 
@@ -63,6 +65,8 @@ class MypageViewModel @Inject constructor(private val userRepository: UserReposi
         }
     }
 
+    suspend fun getUserById(uid: String) = userRepository.getUserInfo(uid)
+
     suspend fun editUserInfo(editNickname: String, editIntroduce: String, profileImage: String) =
         viewModelScope.launch {
             val editUser = user.value.copy(
@@ -80,5 +84,9 @@ class MypageViewModel @Inject constructor(private val userRepository: UserReposi
 
     fun editUserProfile(fileName: String, uri: Uri) = viewModelScope.launch {
         userRepository.editUserProfile(fileName, uri)
+    }
+
+    fun follow(uid: String) = viewModelScope.launch {
+        userRepository.follow(uid)
     }
 }

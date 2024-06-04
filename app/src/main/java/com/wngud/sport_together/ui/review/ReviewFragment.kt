@@ -1,5 +1,6 @@
 package com.wngud.sport_together.ui.review
 
+import android.app.AlertDialog
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -14,6 +15,8 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.wngud.sport_together.R
 import com.wngud.sport_together.databinding.FragmentReviewBinding
+import com.wngud.sport_together.ui.chatting.ChattingRoomAdapter
+import com.wngud.sport_together.ui.mypage.MypageViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -23,6 +26,7 @@ class ReviewFragment : Fragment() {
 
     private lateinit var binding: FragmentReviewBinding
     private val reviewViewModel: ReviewViewModel by viewModels()
+    private val userViewModel: MypageViewModel by viewModels()
     private val reviewAdapter by lazy {
         ReviewAdapter(requireContext())
     }
@@ -66,6 +70,18 @@ class ReviewFragment : Fragment() {
         binding.rvReview.run {
             adapter = reviewAdapter
             layoutManager = LinearLayoutManager(requireContext())
+            reviewAdapter.setItemClickListener(object : ReviewAdapter.onItemClickListener {
+                override fun onItemClick(position: Int) {
+                    val review = reviewViewModel.review.value.reviews[position]
+                    val builder = AlertDialog.Builder(requireContext())
+                    builder.setTitle("${review.nickname}님을 팔로우하시겠습니까?")
+                        .setPositiveButton("네") { dialog, which ->
+                            userViewModel.follow(review.uid)
+                        }.setNegativeButton("아니오") { dialog, which ->
+
+                        }.create().show()
+                }
+            })
         }
     }
 
