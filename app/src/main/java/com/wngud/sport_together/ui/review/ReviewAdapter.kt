@@ -2,6 +2,7 @@ package com.wngud.sport_together.ui.review
 
 import android.content.Context
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -34,6 +35,7 @@ class ReviewAdapter @Inject constructor(
                 adapter = imageAdapter
                 layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
             }
+            binding.btnFollowItemReview.visibility = if(review.uid == App.auth.currentUser!!.uid) View.INVISIBLE else View.VISIBLE
         }
     }
 
