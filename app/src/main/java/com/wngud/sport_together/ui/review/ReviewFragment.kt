@@ -1,5 +1,6 @@
 package com.wngud.sport_together.ui.review
 
+import android.app.AlertDialog
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -14,6 +15,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.wngud.sport_together.R
 import com.wngud.sport_together.databinding.FragmentReviewBinding
+import com.wngud.sport_together.domain.model.Review
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -66,7 +68,24 @@ class ReviewFragment : Fragment() {
         binding.rvReview.run {
             adapter = reviewAdapter
             layoutManager = LinearLayoutManager(requireContext())
+
+            reviewAdapter.setItemClickListener(object :
+                ReviewAdapter.onItemClickListener {
+                override fun onItemClick(position: Int) {
+                    showDialog(reviewViewModel.review.value.reviews[position])
+                }
+            })
         }
+    }
+
+    private fun showDialog(review: Review) {
+        val builder = AlertDialog.Builder(requireContext())
+        builder.setTitle("${review.nickname}님을 팔로우 하겠습니까?")
+            .setPositiveButton("네") { dialog, which ->
+
+            }.setNegativeButton("아니오") { dialog, which ->
+
+            }.create().show()
     }
 
     private fun backPress() {

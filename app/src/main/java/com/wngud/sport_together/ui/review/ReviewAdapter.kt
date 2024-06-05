@@ -18,6 +18,16 @@ class ReviewAdapter @Inject constructor(
     private val context: Context
 ) : ListAdapter<Review, ReviewAdapter.ReviewViewHolder>(DIFF_CALLBACK) {
 
+    interface onItemClickListener {
+        fun onItemClick(position: Int)
+    }
+
+    private lateinit var itemClickListener: onItemClickListener
+
+    fun setItemClickListener(itemClickListener: onItemClickListener) {
+        this.itemClickListener = itemClickListener
+    }
+
     inner class ReviewViewHolder(private val binding: ItemReviewBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(review: Review) {
@@ -36,6 +46,9 @@ class ReviewAdapter @Inject constructor(
                 layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
             }
             binding.btnFollowItemReview.visibility = if(review.uid == App.auth.currentUser!!.uid) View.INVISIBLE else View.VISIBLE
+            binding.btnFollowItemReview.setOnClickListener {
+                itemClickListener.onItemClick(position)
+            }
         }
     }
 
