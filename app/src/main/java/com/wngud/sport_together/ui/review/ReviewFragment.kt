@@ -19,15 +19,15 @@ import com.wngud.sport_together.domain.model.Review
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class ReviewFragment : Fragment() {
 
     private lateinit var binding: FragmentReviewBinding
     private val reviewViewModel: ReviewViewModel by viewModels()
-    private val reviewAdapter by lazy {
-        ReviewAdapter(requireContext())
-    }
+    @Inject
+    lateinit var reviewAdapter: ReviewAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

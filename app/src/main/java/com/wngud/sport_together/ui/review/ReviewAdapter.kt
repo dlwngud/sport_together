@@ -1,6 +1,7 @@
 package com.wngud.sport_together.ui.review
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,11 +13,19 @@ import com.bumptech.glide.Glide
 import com.wngud.sport_together.App
 import com.wngud.sport_together.databinding.ItemReviewBinding
 import com.wngud.sport_together.domain.model.Review
+import com.wngud.sport_together.domain.repository.UserRepository
+import dagger.hilt.android.qualifiers.ActivityContext
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class ReviewAdapter @Inject constructor(
-    private val context: Context
+    @ActivityContext private val context: Context,
+    private val userRepository: UserRepository
 ) : ListAdapter<Review, ReviewAdapter.ReviewViewHolder>(DIFF_CALLBACK) {
+
+    private val coroutineScope = CoroutineScope(Dispatchers.IO)
 
     interface onItemClickListener {
         fun onItemClick(position: Int)
@@ -31,6 +40,12 @@ class ReviewAdapter @Inject constructor(
     inner class ReviewViewHolder(private val binding: ItemReviewBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(review: Review) {
+            var isFollowing = false
+            coroutineScope.launch {
+                isFollowing = userRepository.getFollowingStatus(review.uid)
+                Log.i("adapter", isFollowing.toString())
+            }
+
             App.storage.reference.child(review.profileImage).downloadUrl.addOnSuccessListener {
                 Glide.with(context)
                     .load(it)
