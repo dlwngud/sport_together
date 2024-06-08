@@ -21,6 +21,7 @@ import com.wngud.sport_together.databinding.FragmentChattingRoomBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class ChattingRoomFragment : Fragment() {
@@ -28,9 +29,8 @@ class ChattingRoomFragment : Fragment() {
     private lateinit var binding: FragmentChattingRoomBinding
     private val chattingRoomViewModel: ChattingRoomViewModel by viewModels()
     private val chattingViewModel: ChattingViewModel by viewModels()
-    private val chattingRoomAdapter by lazy {
-        ChattingRoomAdapter(requireContext())
-    }
+    @Inject
+    lateinit var chattingRoomAdapter: ChattingRoomAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -67,16 +67,13 @@ class ChattingRoomFragment : Fragment() {
                 ChattingRoomAdapter.onItemClickListener {
                 override fun onItemClick(position: Int) {
                     val bundle = Bundle()
-                    val roomId = chattingRoomViewModel.roomList.value[position].roomId
-                    chattingRoomViewModel.roomList.value[position].users.find { it.uid != App.auth.currentUser!!.uid }
-                        .apply {
-                            bundle.putString("counterUserProfileImage", this!!.profileImage)
-                            bundle.putString("counterUserNickname", this.nickname)
-                            bundle.putString("counterUid", this.uid)
-                        }
-                    Log.i("room", roomId)
+                    val chattingRoom = chattingRoomViewModel.roomList.value[position]
+                    chattingRoomViewModel.roomList.value[position].users.find { it != App.auth.currentUser!!.uid }
+                    Log.i("room", chattingRoom.roomId)
 //                    chattingViewModel.getChatting(roomId)
-                    bundle.putString("roomId", roomId)
+                    val counterUid = chattingRoom.users.find { it != App.auth.currentUser!!.uid }!!
+                    bundle.putString("roomId", chattingRoom.roomId)
+                    bundle.putString("counterUid", counterUid)
                     findNavController().navigate(R.id.nav_chatting, bundle)
                 }
             })

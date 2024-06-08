@@ -20,14 +20,12 @@ class ChattingRepositoryImpl @Inject constructor(
 ) : ChattingRepository {
     override suspend fun sendChatting(chatting: Chatting, users: List<String>) {
         val chattingRoomRef = App.db.collection("ChattingRooms")
-        val counterUId = users.find { it != App.auth.currentUser!!.uid }
-        val myUId = users.find { it == App.auth.currentUser!!.uid }
-        val mUser = userDataSource.getMyInfo(myUId!!).firstOrNull()!!
-        val counterUser = userDataSource.getMyInfo(counterUId!!).firstOrNull()!!
-        var roomId = getRoomIdOrNull(listOf(mUser, counterUser))
+        val counterUId = users.find { it != App.auth.currentUser!!.uid }!!
+        val myUId = users.find { it == App.auth.currentUser!!.uid }!!
+        var roomId = getRoomIdOrNull(listOf(myUId, counterUId))
         val chattingRoom =
             ChattingRoom(
-                users = listOf(mUser, counterUser),
+                users = listOf(myUId, counterUId),
                 createdAt = System.currentTimeMillis()
             )
         if (roomId == null) {
@@ -73,7 +71,7 @@ class ChattingRepositoryImpl @Inject constructor(
         return querySnapshot.toObjects<ChattingRoom>()
     }
 
-    override suspend fun getRoomIdOrNull(users: List<User>): String? {
+    override suspend fun getRoomIdOrNull(users: List<String>): String? {
         val roomList = getAllChattingRoom()
         var roomId: String? = null
         for (room in roomList) {

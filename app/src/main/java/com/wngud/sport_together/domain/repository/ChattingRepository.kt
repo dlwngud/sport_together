@@ -12,5 +12,5 @@ interface ChattingRepository {
 
     suspend fun getAllChattingRoom(): List<ChattingRoom>
 
-    suspend fun getRoomIdOrNull(users: List<User>): String?
+    suspend fun getRoomIdOrNull(users: List<String>): String?
 }
