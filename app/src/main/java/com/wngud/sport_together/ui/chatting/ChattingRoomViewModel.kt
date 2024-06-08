@@ -27,7 +27,7 @@ class ChattingRoomViewModel @Inject constructor(
         getAllMyChattingRooms()
     }
 
-    private fun getAllMyChattingRooms() = viewModelScope.launch {
+    fun getAllMyChattingRooms() = viewModelScope.launch {
         val chattingRooms = chattingRepository.getAllChattingRoom()
         val mUser = userRepository.getMyInfo(App.auth.currentUser!!.uid)
         _roomList.update { chattingRooms.filter { it.users.contains(mUser.first().uid) } }

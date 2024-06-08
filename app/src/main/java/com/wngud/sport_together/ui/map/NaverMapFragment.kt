@@ -35,6 +35,7 @@ import com.naver.maps.map.util.FusedLocationSource
 import com.wngud.sport_together.R
 import com.wngud.sport_together.databinding.FragmentMapBinding
 import com.wngud.sport_together.domain.model.Exercise
+import com.wngud.sport_together.ui.chatting.ChattingRoomViewModel
 import com.wngud.sport_together.ui.mypage.MypageViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -47,6 +48,7 @@ class NaverMapFragment : Fragment(), OnMapReadyCallback {
     private lateinit var binding: FragmentMapBinding
     private val mapViewModel: MapViewModel by viewModels()
     private val mypageViewModel: MypageViewModel by viewModels()
+    private val chattingRoomViewModel: ChattingRoomViewModel by viewModels()
 
     private lateinit var locationSource: FusedLocationSource
     private lateinit var naverMap: NaverMap
@@ -87,6 +89,7 @@ class NaverMapFragment : Fragment(), OnMapReadyCallback {
             initMapView()
             setBottomSheet()
             getInfo()
+            chattingRoomViewModel.getAllMyChattingRooms()
         }
 
         return binding.root
@@ -226,7 +229,11 @@ class NaverMapFragment : Fragment(), OnMapReadyCallback {
                             val builder = AlertDialog.Builder(requireContext())
                             builder.setTitle("${exercise.nickname}님과 채팅하시겠습니까?")
                                 .setPositiveButton("네") { dialog, which ->
-                                    findNavController().navigate(R.id.nav_chatting)
+                                    val bundle = Bundle()
+                                    val room = chattingRoomViewModel.roomList.value.find { it.users.contains(exercise.uid) }!!
+                                    bundle.putString("roomId", room.roomId)
+                                    bundle.putString("counterUid", exercise.uid)
+                                    findNavController().navigate(R.id.nav_chatting, bundle)
                                 }.setNegativeButton("아니오") { dialog, which ->
 
                                 }.create().show()
