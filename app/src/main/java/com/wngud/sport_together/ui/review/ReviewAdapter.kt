@@ -40,15 +40,14 @@ class ReviewAdapter @Inject constructor(
     inner class ReviewViewHolder(private val binding: ItemReviewBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(review: Review) {
-            var isFollowing = false
             coroutineScope.launch(Dispatchers.Main) {
-                isFollowing = userRepository.getFollowingStatus(review.uid)
+                val isFollowing = userRepository.getFollowingStatus(review.uid)
                 binding.btnFollowItemReview.visibility = if(review.uid == App.auth.currentUser!!.uid) View.INVISIBLE
                 else {
                     if(isFollowing) {
                         binding.btnFollowItemReview.text = "팔로잉 ✔"
                     } else {
-                        binding.btnFollowItemReview.text = "팔로잉"
+                        binding.btnFollowItemReview.text = "팔로워"
                     }
                     View.VISIBLE
                 }

@@ -17,6 +17,7 @@ import com.wngud.sport_together.R
 import com.wngud.sport_together.databinding.FragmentReviewBinding
 import com.wngud.sport_together.domain.model.Review
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -26,6 +27,7 @@ class ReviewFragment : Fragment() {
 
     private lateinit var binding: FragmentReviewBinding
     private val reviewViewModel: ReviewViewModel by viewModels()
+
     @Inject
     lateinit var reviewAdapter: ReviewAdapter
 
@@ -79,13 +81,27 @@ class ReviewFragment : Fragment() {
     }
 
     private fun showDialog(review: Review) {
-        val builder = AlertDialog.Builder(requireContext())
-        builder.setTitle("${review.nickname}님을 팔로우 하겠습니까?")
-            .setPositiveButton("네") { dialog, which ->
+        lifecycleScope.launch(Dispatchers.Main) {
+            val isFollowing = reviewViewModel.getFollowingStatus(review.uid)
+            val builder = AlertDialog.Builder(requireContext())
+            if (isFollowing) {
+                builder.setTitle("${review.nickname}님을 팔로잉을 해제하겠습니까?")
+                    .setPositiveButton("네") { dialog, which ->
 
-            }.setNegativeButton("아니오") { dialog, which ->
+                    }.setNegativeButton("아니오") { dialog, which ->
 
-            }.create().show()
+                    }.create().show()
+            } else {
+                builder.setTitle("${review.nickname}님을 팔로잉 하겠습니까?")
+                    .setPositiveButton("네") { dialog, which ->
+
+                    }.setNegativeButton("아니오") { dialog, which ->
+
+                    }.create().show()
+            }
+        }
+
+
     }
 
     private fun backPress() {
