@@ -92,7 +92,7 @@ class LoginViewModel @Inject constructor(private val userRepository: UserReposit
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithEmail:success")
                             viewModelScope.launch {
-                                userRepository.getUserInfo(auth.uid!!)
+                                userRepository.getMyInfo(auth.uid!!)
                             }
                             _uiState.update { LoginUiState.Success }
                             startEvent(LoginEvent.MoveToMain)

@@ -10,7 +10,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -30,7 +29,7 @@ class ChattingRoomViewModel @Inject constructor(
 
     private fun getAllMyChattingRooms() = viewModelScope.launch {
         val chattingRooms = chattingRepository.getAllChattingRoom()
-        val mUser = userRepository.getUserInfo(App.auth.currentUser!!.uid)
+        val mUser = userRepository.getMyInfo(App.auth.currentUser!!.uid)
         _roomList.update { chattingRooms.filter { it.users.contains(mUser.first()) } }
     }
 }

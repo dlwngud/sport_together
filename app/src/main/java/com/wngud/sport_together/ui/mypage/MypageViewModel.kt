@@ -58,7 +58,7 @@ class MypageViewModel @Inject constructor(private val userRepository: UserReposi
     }
 
     private fun getCurrentUser(uid: String) = viewModelScope.launch {
-        userRepository.getUserInfo(uid).collect { user ->
+        userRepository.getMyInfo(uid).collect { user ->
             _user.update { user }
         }
     }

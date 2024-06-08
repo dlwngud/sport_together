@@ -22,8 +22,8 @@ class ChattingRepositoryImpl @Inject constructor(
         val chattingRoomRef = App.db.collection("ChattingRooms")
         val counterUId = users.find { it != App.auth.currentUser!!.uid }
         val myUId = users.find { it == App.auth.currentUser!!.uid }
-        val mUser = userDataSource.getUserInfo(myUId!!).firstOrNull()!!
-        val counterUser = userDataSource.getUserInfo(counterUId!!).firstOrNull()!!
+        val mUser = userDataSource.getMyInfo(myUId!!).firstOrNull()!!
+        val counterUser = userDataSource.getMyInfo(counterUId!!).firstOrNull()!!
         var roomId = getRoomIdOrNull(listOf(mUser, counterUser))
         val chattingRoom =
             ChattingRoom(
