@@ -10,10 +10,11 @@ import com.wngud.sport_together.domain.model.User
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
 class UserDataSource {
-    suspend fun getUserInfo(uid: String) = callbackFlow {
+    fun getMyInfo(uid: String) = callbackFlow {
         App.db.collection("users").document(uid).addSnapshotListener { snapshot, e ->
             if (e != null) {
                 return@addSnapshotListener
@@ -44,6 +45,17 @@ class UserDataSource {
         }
         awaitClose { }
     }
+
+    suspend fun getUserInfo(uid: String): User {
+        val docSnap = App.db.collection("users").document(uid).get().await()
+        if(docSnap.exists()) {
+            return docSnap.toObject<User>() ?: throw IllegalStateException("User deserialization failed")
+        } else {
+            throw NoSuchElementException("No user found with uid: $uid")
+        }
+    }
+
+
 
     suspend fun saveUserInfo(user: User) {
         withContext(Dispatchers.IO) {
@@ -76,5 +88,12 @@ class UserDataSource {
 
     suspend fun editUserProfile(fileName: String, uri: Uri) {
         val uploadTask = App.storage.reference.child("images/users/${fileName}.jpg").putFile(uri)
+    }
+
+    suspend fun getFollowingStatus(uid: String): Boolean {
+        val myInfo = getUserInfo(App.auth.currentUser!!.uid)
+        Log.i("datasource", myInfo.following.toString())
+        Log.i("datasource", uid)
+        return myInfo.following.contains(uid)
     }
 }

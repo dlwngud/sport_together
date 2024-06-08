@@ -41,9 +41,17 @@ class ReviewAdapter @Inject constructor(
         RecyclerView.ViewHolder(binding.root) {
         fun bind(review: Review) {
             var isFollowing = false
-            coroutineScope.launch {
+            coroutineScope.launch(Dispatchers.Main) {
                 isFollowing = userRepository.getFollowingStatus(review.uid)
-                Log.i("adapter", isFollowing.toString())
+                binding.btnFollowItemReview.visibility = if(review.uid == App.auth.currentUser!!.uid) View.INVISIBLE
+                else {
+                    if(isFollowing) {
+                        binding.btnFollowItemReview.text = "팔로잉 ✔"
+                    } else {
+                        binding.btnFollowItemReview.text = "팔로잉"
+                    }
+                    View.VISIBLE
+                }
             }
 
             App.storage.reference.child(review.profileImage).downloadUrl.addOnSuccessListener {
@@ -60,7 +68,6 @@ class ReviewAdapter @Inject constructor(
                 adapter = imageAdapter
                 layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
             }
-            binding.btnFollowItemReview.visibility = if(review.uid == App.auth.currentUser!!.uid) View.INVISIBLE else View.VISIBLE
             binding.btnFollowItemReview.setOnClickListener {
                 itemClickListener.onItemClick(position)
             }

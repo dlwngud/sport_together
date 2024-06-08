@@ -39,7 +39,7 @@ class FollowingFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 mypageViewModel.user.collectLatest {
-                    followingAdapter.submitList(it.following)
+//                    followingAdapter.submitList(it.following)
                 }
             }
         }
