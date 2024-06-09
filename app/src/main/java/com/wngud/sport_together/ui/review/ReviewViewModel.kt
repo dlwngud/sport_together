@@ -42,6 +42,4 @@ class ReviewViewModel @Inject constructor(
             _reviews.update { it.copy(reviewList) }
         }
     }
-
-    suspend fun getFollowingStatus(uid: String) = userRepository.getFollowingStatus(uid)
 }
