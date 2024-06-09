@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.wngud.sport_together.R
 import com.wngud.sport_together.databinding.FragmentReviewBinding
 import com.wngud.sport_together.domain.model.Review
+import com.wngud.sport_together.ui.mypage.MypageViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
@@ -27,6 +28,7 @@ class ReviewFragment : Fragment() {
 
     private lateinit var binding: FragmentReviewBinding
     private val reviewViewModel: ReviewViewModel by viewModels()
+    private val userViewModel: MypageViewModel by viewModels()
 
     @Inject
     lateinit var reviewAdapter: ReviewAdapter
@@ -87,14 +89,14 @@ class ReviewFragment : Fragment() {
             if (isFollowing) {
                 builder.setTitle("${review.nickname}님을 팔로잉을 해제하겠습니까?")
                     .setPositiveButton("네") { dialog, which ->
-
+                        userViewModel.unfollowing(review.uid)
                     }.setNegativeButton("아니오") { dialog, which ->
 
                     }.create().show()
             } else {
                 builder.setTitle("${review.nickname}님을 팔로잉 하겠습니까?")
                     .setPositiveButton("네") { dialog, which ->
-
+                        userViewModel.following(review.uid)
                     }.setNegativeButton("아니오") { dialog, which ->
 
                     }.create().show()

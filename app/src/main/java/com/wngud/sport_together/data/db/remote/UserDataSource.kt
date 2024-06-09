@@ -48,13 +48,13 @@ class UserDataSource {
 
     suspend fun getUserInfo(uid: String): User {
         val docSnap = App.db.collection("users").document(uid).get().await()
-        if(docSnap.exists()) {
-            return docSnap.toObject<User>() ?: throw IllegalStateException("User deserialization failed")
+        if (docSnap.exists()) {
+            return docSnap.toObject<User>()
+                ?: throw IllegalStateException("User deserialization failed")
         } else {
             throw NoSuchElementException("No user found with uid: $uid")
         }
     }
-
 
 
     suspend fun saveUserInfo(user: User) {
@@ -95,5 +95,43 @@ class UserDataSource {
         Log.i("datasource", myInfo.following.toString())
         Log.i("datasource", uid)
         return myInfo.following.contains(uid)
+    }
+
+    suspend fun unfollowing(uid: String) {
+        withContext(Dispatchers.IO) {
+            val myInfo = App.db.collection("users").document(App.auth.currentUser!!.uid).get().await().toObject<User>()!!
+            val counterUser = App.db.collection("users").document(uid).get().await().toObject<User>()!!
+            val myFollowing = myInfo.following.toMutableList()
+            val counterFollower = counterUser.follower.toMutableList()
+            myFollowing.remove(uid)
+            counterFollower.remove(App.auth.currentUser!!.uid)
+            val editMyInfo = myInfo.copy(following = myFollowing)
+            val editCounterUser = counterUser.copy(follower = counterFollower)
+            App.db.collection("users").document(App.auth.currentUser!!.uid).set(editMyInfo).addOnSuccessListener {
+                Log.i("datasource", "언팔 성공")
+            }
+            App.db.collection("users").document(uid).set(editCounterUser).addOnSuccessListener {
+                Log.i("datasource", "팔로워 삭제 성공")
+            }
+        }
+    }
+
+    suspend fun following(uid: String) {
+        withContext(Dispatchers.IO) {
+            val myInfo = App.db.collection("users").document(App.auth.currentUser!!.uid).get().await().toObject<User>()!!
+            val counterUser = App.db.collection("users").document(uid).get().await().toObject<User>()!!
+            val myFollowing = myInfo.following.toMutableList()
+            val counterFollower = counterUser.follower.toMutableList()
+            myFollowing.add(uid)
+            counterFollower.add(App.auth.currentUser!!.uid)
+            val editMyInfo = myInfo.copy(following = myFollowing)
+            val editCounterUser = counterUser.copy(follower = counterFollower)
+            App.db.collection("users").document(App.auth.currentUser!!.uid).set(editMyInfo).addOnSuccessListener {
+                Log.i("datasource", "팔로잉 성공")
+            }
+            App.db.collection("users").document(uid).set(editCounterUser).addOnSuccessListener {
+                Log.i("datasource", "팔로워 성공")
+            }
+        }
     }
 }

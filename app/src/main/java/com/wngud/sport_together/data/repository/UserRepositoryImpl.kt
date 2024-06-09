@@ -33,4 +33,12 @@ class UserRepositoryImpl @Inject constructor(private val userDataSource: UserDat
     override suspend fun getFollowingStatus(uid: String): Boolean {
         return userDataSource.getFollowingStatus(uid)
     }
+
+    override suspend fun unfollowing(uid: String) {
+        userDataSource.unfollowing(uid)
+    }
+
+    override suspend fun following(uid: String) {
+        userDataSource.following(uid)
+    }
 }

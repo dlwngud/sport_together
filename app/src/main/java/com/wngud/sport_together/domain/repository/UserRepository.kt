@@ -17,4 +17,8 @@ interface UserRepository {
     suspend fun editUserProfile(fileName: String, uri: Uri)
 
     suspend fun getFollowingStatus(uid: String): Boolean
+
+    suspend fun unfollowing(uid: String)
+
+    suspend fun following(uid: String)
 }
