@@ -32,13 +32,11 @@ class ReviewViewModel @Inject constructor(
         getAllReviews()
     }
 
-
     fun saveReview(review: Review, uris: List<Uri>) = viewModelScope.launch {
         reviewRepository.saveReview(review, uris)
     }
 
     fun getAllReviews() = viewModelScope.launch {
-
         reviewRepository.getAllReviews().collectLatest { reviewList ->
             Log.i("review_vm", reviewList.size.toString())
             _reviews.update { it.copy(reviewList) }
