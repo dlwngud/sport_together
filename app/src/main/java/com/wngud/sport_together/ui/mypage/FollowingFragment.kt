@@ -36,15 +36,15 @@ class FollowingFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewLifecycleOwner.lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                mypageViewModel.user.collectLatest {
-                    followingAdapter.submitList(it.following)
-                }
-            }
-        }
+//        viewLifecycleOwner.lifecycleScope.launch {
+//            repeatOnLifecycle(Lifecycle.State.STARTED) {
+//                mypageViewModel.user.collectLatest {
+//                    followingAdapter.submitList(it.following)
+//                }
+//            }
+//        }
 
-        setRecyclerView()
+//        setRecyclerView()
     }
 
     private fun setRecyclerView() {

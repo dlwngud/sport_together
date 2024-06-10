@@ -29,7 +29,7 @@ class ReviewRepositoryImpl @Inject constructor() : ReviewRepository {
             }
     }
 
-    override suspend fun getAllReviews(): Flow<List<Review>> {
+    override fun getAllReviews(): Flow<List<Review>> {
         return flow {
             val reviews = App.db.collection("reviews").get().await().toObjects(Review::class.java).sortedByDescending { it.createTime }
             emit(reviews)

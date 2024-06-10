@@ -13,14 +13,19 @@ import com.wngud.sport_together.R
 import com.wngud.sport_together.databinding.ItemCounterChattingBinding
 import com.wngud.sport_together.databinding.ItemMyChattingBinding
 import com.wngud.sport_together.domain.model.Chatting
+import com.wngud.sport_together.domain.repository.UserRepository
+import dagger.hilt.android.qualifiers.ActivityContext
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class ChattingAdapter @Inject constructor(
-    private val context: Context
+    @ActivityContext private val context: Context,
+    private val userRepository: UserRepository
 ) : ListAdapter<Chatting, RecyclerView.ViewHolder>(diffUtil) {
 
-    private var counterUserNickname: String? = null
-    private var counterUserProfileImage: String? = null
+    private val coroutineScope = CoroutineScope(Dispatchers.IO)
 
     inner class MyChattingViewHolder(private val binding: ItemMyChattingBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -35,8 +40,9 @@ class ChattingAdapter @Inject constructor(
         RecyclerView.ViewHolder(binding.root) {
         fun bind(chatting: Chatting) {
             binding.run {
-                counterUserProfileImage?.let { profileImage ->
-                    App.storage.reference.child(profileImage).downloadUrl.addOnSuccessListener {
+                coroutineScope.launch(Dispatchers.Main) {
+                    val counterUser = userRepository.getUserInfo(chatting.senderId)
+                    App.storage.reference.child(counterUser.profileImage).downloadUrl.addOnSuccessListener {
                         Glide.with(context)
                             .load(it)
                             .placeholder(R.drawable.app_icon)
@@ -44,9 +50,10 @@ class ChattingAdapter @Inject constructor(
                             .centerCrop()
                             .into(binding.ivProfileCounterChatting)
                     }
+
+                    tvContentCounterChatting.text = chatting.content
+                    tvNicknameCounterChatting.text = counterUser.nickname
                 }
-                tvContentCounterChatting.text = chatting.content
-                tvNicknameCounterChatting.text = counterUserNickname
             }
         }
     }
@@ -84,11 +91,6 @@ class ChattingAdapter @Inject constructor(
     override fun getItemViewType(position: Int): Int {
         return if (App.auth.currentUser!!.uid == getItem(position).senderId) MY_CHAT
         else OTHER_CHAT
-    }
-
-    fun setCounterUserInfo(counterUserNickname: String?, counterUserProfileImage: String?) {
-        this.counterUserNickname = counterUserNickname
-        this.counterUserProfileImage = counterUserProfileImage
     }
 
     companion object {

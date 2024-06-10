@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.wngud.sport_together.domain.model.Review
 import com.wngud.sport_together.domain.repository.ReviewRepository
+import com.wngud.sport_together.domain.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -20,8 +21,9 @@ data class reviewUiState(
 
 @HiltViewModel
 class ReviewViewModel @Inject constructor(
-    private val reviewRepository: ReviewRepository
-): ViewModel() {
+    private val reviewRepository: ReviewRepository,
+    private val userRepository: UserRepository
+) : ViewModel() {
 
     private val _reviews = MutableStateFlow(reviewUiState())
     val review = _reviews.asStateFlow()
@@ -30,13 +32,11 @@ class ReviewViewModel @Inject constructor(
         getAllReviews()
     }
 
-
     fun saveReview(review: Review, uris: List<Uri>) = viewModelScope.launch {
         reviewRepository.saveReview(review, uris)
     }
 
     fun getAllReviews() = viewModelScope.launch {
-
         reviewRepository.getAllReviews().collectLatest { reviewList ->
             Log.i("review_vm", reviewList.size.toString())
             _reviews.update { it.copy(reviewList) }

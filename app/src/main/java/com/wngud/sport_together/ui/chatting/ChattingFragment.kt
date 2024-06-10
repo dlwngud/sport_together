@@ -18,15 +18,15 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import okhttp3.internal.notifyAll
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class ChattingFragment : Fragment() {
 
     private lateinit var binding: FragmentChattingBinding
     private val chattingViewModel: ChattingViewModel by viewModels()
-    private val chattingAdapter by lazy {
-        ChattingAdapter(requireContext())
-    }
+    @Inject
+    lateinit var chattingAdapter: ChattingAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -35,16 +35,9 @@ class ChattingFragment : Fragment() {
         binding = FragmentChattingBinding.inflate(layoutInflater, container, false)
 
         val roomId = arguments?.getString("roomId")
-        val counterUserNickname = arguments?.getString("counterUserNickname")
-        val counterUserProfileImage = arguments?.getString("counterUserProfileImage")
         val counterUid = arguments?.getString("counterUid")
         roomId?.let {
             chattingViewModel.getChatting(it)
-        }
-        chattingAdapter.setCounterUserInfo(counterUserNickname, counterUserProfileImage)
-
-        binding.run {
-            toolbarChatting.title = counterUserNickname
         }
 
         viewLifecycleOwner.lifecycleScope.launch {

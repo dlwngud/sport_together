@@ -1,7 +1,9 @@
 package com.wngud.sport_together.ui.review
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -11,15 +13,46 @@ import com.bumptech.glide.Glide
 import com.wngud.sport_together.App
 import com.wngud.sport_together.databinding.ItemReviewBinding
 import com.wngud.sport_together.domain.model.Review
+import com.wngud.sport_together.domain.repository.UserRepository
+import dagger.hilt.android.qualifiers.ActivityContext
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class ReviewAdapter @Inject constructor(
-    private val context: Context
+    @ActivityContext private val context: Context,
+    private val userRepository: UserRepository
 ) : ListAdapter<Review, ReviewAdapter.ReviewViewHolder>(DIFF_CALLBACK) {
+
+    private val coroutineScope = CoroutineScope(Dispatchers.IO)
+
+    interface onItemClickListener {
+        fun onItemClick(position: Int)
+    }
+
+    private lateinit var itemClickListener: onItemClickListener
+
+    fun setItemClickListener(itemClickListener: onItemClickListener) {
+        this.itemClickListener = itemClickListener
+    }
 
     inner class ReviewViewHolder(private val binding: ItemReviewBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(review: Review) {
+            coroutineScope.launch(Dispatchers.Main) {
+                val isFollowing = userRepository.getFollowingStatus(review.uid)
+                binding.btnFollowItemReview.visibility = if(review.uid == App.auth.currentUser!!.uid) View.INVISIBLE
+                else {
+                    if(isFollowing) {
+                        binding.btnFollowItemReview.text = "팔로잉 ✔"
+                    } else {
+                        binding.btnFollowItemReview.text = "팔로워"
+                    }
+                    View.VISIBLE
+                }
+            }
+
             App.storage.reference.child(review.profileImage).downloadUrl.addOnSuccessListener {
                 Glide.with(context)
                     .load(it)
@@ -33,6 +66,9 @@ class ReviewAdapter @Inject constructor(
                 val imageAdapter = ImageAdapter(review, context)
                 adapter = imageAdapter
                 layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+            }
+            binding.btnFollowItemReview.setOnClickListener {
+                itemClickListener.onItemClick(position)
             }
         }
     }

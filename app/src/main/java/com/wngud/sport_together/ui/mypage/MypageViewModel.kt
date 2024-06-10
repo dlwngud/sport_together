@@ -58,7 +58,7 @@ class MypageViewModel @Inject constructor(private val userRepository: UserReposi
     }
 
     private fun getCurrentUser(uid: String) = viewModelScope.launch {
-        userRepository.getUserInfo(uid).collect { user ->
+        userRepository.getMyInfo(uid).collect { user ->
             _user.update { user }
         }
     }
@@ -80,5 +80,13 @@ class MypageViewModel @Inject constructor(private val userRepository: UserReposi
 
     fun editUserProfile(fileName: String, uri: Uri) = viewModelScope.launch {
         userRepository.editUserProfile(fileName, uri)
+    }
+
+    fun unfollowing(uid: String) = viewModelScope.launch {
+        userRepository.unfollowing(uid)
+    }
+
+    fun following(uid: String) = viewModelScope.launch {
+        userRepository.following(uid)
     }
 }
