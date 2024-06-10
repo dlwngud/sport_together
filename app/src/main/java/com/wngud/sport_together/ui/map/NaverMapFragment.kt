@@ -32,6 +32,7 @@ import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.OverlayImage
 import com.naver.maps.map.util.FusedLocationSource
+import com.wngud.sport_together.App
 import com.wngud.sport_together.R
 import com.wngud.sport_together.databinding.FragmentMapBinding
 import com.wngud.sport_together.domain.model.Exercise
@@ -226,17 +227,21 @@ class NaverMapFragment : Fragment(), OnMapReadyCallback {
                             }
                         }
                         bottomSheetMap.setOnClickListener {
-                            val builder = AlertDialog.Builder(requireContext())
-                            builder.setTitle("${exercise.nickname}님과 채팅하시겠습니까?")
-                                .setPositiveButton("네") { dialog, which ->
-                                    val bundle = Bundle()
-                                    val room = chattingRoomViewModel.roomList.value.find { it.users.contains(exercise.uid) }!!
-                                    bundle.putString("roomId", room.roomId)
-                                    bundle.putString("counterUid", exercise.uid)
-                                    findNavController().navigate(R.id.nav_chatting, bundle)
-                                }.setNegativeButton("아니오") { dialog, which ->
+                            if (exercise.uid != App.auth.currentUser!!.uid) {
+                                val builder = AlertDialog.Builder(requireContext())
+                                builder.setTitle("${exercise.nickname}님과 채팅하시겠습니까?")
+                                    .setPositiveButton("네") { dialog, which ->
+                                        val bundle = Bundle()
+                                        val room = chattingRoomViewModel.roomList.value.find {
+                                            it.users.contains(exercise.uid)
+                                        }!!
+                                        bundle.putString("roomId", room.roomId)
+                                        bundle.putString("counterUid", exercise.uid)
+                                        findNavController().navigate(R.id.nav_chatting, bundle)
+                                    }.setNegativeButton("아니오") { dialog, which ->
 
-                                }.create().show()
+                                    }.create().show()
+                            }
                         }
                     }
                     true
