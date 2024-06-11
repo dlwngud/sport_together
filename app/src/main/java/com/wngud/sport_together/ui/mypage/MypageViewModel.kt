@@ -89,4 +89,8 @@ class MypageViewModel @Inject constructor(private val userRepository: UserReposi
     fun following(uid: String) = viewModelScope.launch {
         userRepository.following(uid)
     }
+
+    suspend fun getFollowingStatus(uid: String) = userRepository.getFollowingStatus(uid)
+
+    suspend fun getUserInfo(uid: String) = userRepository.getUserInfo(uid)
 }

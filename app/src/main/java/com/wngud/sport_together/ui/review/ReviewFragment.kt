@@ -84,7 +84,7 @@ class ReviewFragment : Fragment() {
 
     private fun showDialog(review: Review) {
         lifecycleScope.launch(Dispatchers.Main) {
-            val isFollowing = reviewViewModel.getFollowingStatus(review.uid)
+            val isFollowing = userViewModel.getFollowingStatus(review.uid)
             val builder = AlertDialog.Builder(requireContext())
             if (isFollowing) {
                 builder.setTitle("${review.nickname}님을 팔로잉을 해제하겠습니까?")
@@ -102,8 +102,6 @@ class ReviewFragment : Fragment() {
                     }.create().show()
             }
         }
-
-
     }
 
     private fun backPress() {
