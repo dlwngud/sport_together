@@ -34,6 +34,11 @@ class MypageFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentMypageBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         binding.run {
             tvFollowerMypage.setOnClickListener {
@@ -56,7 +61,7 @@ class MypageFragment : Fragment() {
             lifecycleScope.launch {
                 mypageViewModel.user.collect { user ->
                     if (user.profileImage.isNotEmpty()) {
-                        showProfile(user)
+//                        showProfile(user)
                     }
                     tvNicknameMypage.text = user.nickname
                     tvIntroduceMypage.text = user.introduce
@@ -66,28 +71,16 @@ class MypageFragment : Fragment() {
             }
         }
         observeUiEvent()
-        return binding.root
-    }
-
-    override fun onResume() {
-        super.onResume()
-        lifecycleScope.launch {
-            mypageViewModel.user.collect { user ->
-                if (user.profileImage.isNotEmpty()) {
-                    showProfile(user)
-                }
-                binding.tvNicknameMypage.text = user.nickname
-                binding.tvIntroduceMypage.text = user.introduce
-            }
-        }
     }
 
     private fun showProfile(user: User) {
-        mypageViewModel.getUserProfile(user.profileImage){
-            if (it.isSuccessful) {
-                Glide.with(requireView()).load(it.result)
-                    .placeholder(R.drawable.app_icon).error(R.drawable.app_icon)
-                    .into(binding.ivProfileMypage)
+        if (::binding.isInitialized) {
+            mypageViewModel.getUserProfile(user.profileImage) {
+                if (it.isSuccessful) {
+                    Glide.with(requireView()).load(it.result)
+                        .placeholder(R.drawable.app_icon).error(R.drawable.app_icon)
+                        .into(binding.ivProfileMypage)
+                }
             }
         }
     }
